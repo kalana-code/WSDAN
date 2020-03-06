@@ -27,14 +27,15 @@ class Sidebar extends Component {
               if (!prop.redirect)
               console.log(this.activeRoute(prop.layout + prop.path))
                 return (
-                    <NavLink
-                      key={key}
-                      to={prop.layout + prop.path}
-                      className="user-nav-link"
-                      activeClassName={this.activeRoute(prop.layout + prop.path)}
-                    >
-                     <i className={prop.icon}></i>
-                    </NavLink> 
+                  <NavLink
+                  key={key}
+                  to={prop.layout + prop.path}
+                  className="user-nav-link"
+                  activeClassName={this.activeRoute(prop.layout + prop.path)}
+                >
+                 {/* <i className={prop.icon} />  */}
+                 {prop.name}
+                </NavLink> 
               )})}
           </ul>
       </div>

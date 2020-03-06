@@ -98,6 +98,7 @@ nav{
   top:50;
   height: calc(100% -  70px);
   width: 40px;
+  color: red;
   background-color:white;
   border-right:1px solid lightgrey;
   
@@ -106,10 +107,11 @@ nav{
   text-align: left;
   padding: 50px 0px 0px 0px;
   list-style: none;
-  width: 40px;
+  width: 100px;
   float: right;
   display: flex;
   flex-direction: column;
+  color: red; 
   
 }
 
