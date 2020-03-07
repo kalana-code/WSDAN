@@ -9,18 +9,18 @@ class Forward extends Component {
         if(localStorage.getItem('Token')){
             console.log(localStorage.getItem('Token'))
         }
-        const config = {
-            method: "get",
-            url: "https://localhost:8081/auth/verify",
-            headers: { }
-        }
+        // const config = {
+        //     method: "get",
+        //     url: "https://localhost:8081/auth/verify",
+        //     headers: { }
+        // }
         axios.get("http://localhost:8081/auth/verify", {
    
         headers: {
             'x-access-token':localStorage.getItem('Token')
         }
         }).then(response=>{
-            if(response.status==200){
+            if(response.status===200){
                 console.log("OK")
                 setTimeout(() => {  this.setState({IsLoading:false}); }, 2000);
                 

@@ -1,16 +1,14 @@
 import React, { Component } from 'react';
 import "./style/user.css";
 import { Route, Switch } from "react-router-dom";
-import {Popover,InputGroup,Button,ButtonGroup,Classes,Divider,Icon} from '@blueprintjs/core';
+import {Popover,Button,ButtonGroup,Classes,Divider,Icon} from '@blueprintjs/core';
 import "@blueprintjs/icons"
 import logo from "./assets/logo/logo_small.png"
-// import user from "./assets/userProfile/user_01.png"
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-// import { faCoffee } from '@fortawesome/free-solid-svg-icons'
+
 import auth from '../auth/auth'
 import Sidebar from "./../components/Sidebar/SidebarUser"
 
-import {userRoute} from "routes.js";
+import {adminRoute} from "routes.js";
 
 class User extends Component {
     state = { 
@@ -19,7 +17,7 @@ class User extends Component {
     }
     getRoutes = routes => {
         return routes.map((prop, key) => {
-          if (prop.layout === "/user") {
+          if (prop.layout === "/admin") {
             return (
               <Route
                 path={prop.layout + prop.path}
@@ -39,16 +37,16 @@ class User extends Component {
     };
     
     getBrandText = path => {
-        for (let i = 0; i < userRoute.length; i++) {
+        for (let i = 0; i < adminRoute.length; i++) {
           if (
             this.props.location.pathname.indexOf(
-                userRoute[i].layout + userRoute[i].path
+                adminRoute[i].layout + adminRoute[i].path
             ) !== -1
           ) {
-            return userRoute[i].name;
+            return adminRoute[i].name;
           }
         }
-        this.props.history.push("/user/dashboard");
+        // this.props.history.push("/admin/dashboard");
         return "Brand";
     };
       
@@ -58,26 +56,17 @@ class User extends Component {
     
     render() { 
         
-        const button = <Icon icon={"inbox"} iconSize={Icon.SIZE_LARGE}/>
-        const button2 =<Icon icon={"badge"} iconSize={Icon.SIZE_LARGE}/>
-        const button3 =<Icon icon={"layers"} iconSize={Icon.SIZE_LARGE}/>
-        const button4 =<Icon icon={"chat"} iconSize={Icon.SIZE_LARGE}/>
+       
         const user =<Icon icon={"user"} iconSize={Icon.SIZE_LARGE}/>
         console.log(this.props.location.pathname)
          return ( 
             <div className="main-container">
                 <nav>
-                    <img className="logo" src={logo} />
+                    <img className="logo" alt="logo" src={logo} />
                     <div className="search-bar">
                         {/* <InputGroup leftIcon="search" style={{background:"#3C4144"}}/> */}
                     </div>
                     <div className="button-set">
-                        {/* <Button id ="search-button" icon="search" minimal="true"></Button> */}
-                        {/* <Button id ="k1" icon={button}    minimal="true"></Button>
-                        <Button id ="k1" icon={button2}   minimal="true"></Button>
-                        <Button id ="k1" icon={button3}   minimal="true"></Button> */}
-                        {/* <Button id ="k1"  icon={"user"}   minimal="true"></Button> */}
-                        
                         <Popover
                             interactionKind={"hover"}
                             popoverClassName={Classes.POPOVER_CONTENT_SIZING }
@@ -87,7 +76,7 @@ class User extends Component {
                             <Button icon={user}    minimal="true"></Button>
                             <div className="user-details">
                                 <div className="user-pic">
-                                    <img  src={auth.getProfile()} />
+                                    <img alt ="profile" src={auth.getProfile()} />
                                     <Button className="user-pic-add" name="showPopover" icon="plus"/>
                                 </div>
                                 <p><b>Hi!.</b> Kalana . Welcome to the Beq</p>
@@ -110,13 +99,13 @@ class User extends Component {
                      
                 </nav>
                 <div className="container">
-                   <Sidebar routes={userRoute} {...this.props}/>
+                   <Sidebar routes={adminRoute} {...this.props}/>
                     <div className="main">
                         <div className="Tag">
                             <p className="Tag-Name">{this.getBrandText(this.props.location.pathname)}</p>
                         </div>
                         <div  className="user-main-panel" >
-                            <Switch>{this.getRoutes(userRoute)}</Switch>
+                            <Switch>{this.getRoutes(adminRoute)}</Switch>
                         </div>
                     </div>
                     

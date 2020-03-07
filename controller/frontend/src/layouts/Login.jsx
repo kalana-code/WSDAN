@@ -3,14 +3,12 @@ import "./style/login.css";
 import {FormGroup,InputGroup,Button,Checkbox,Intent,Tooltip} from '@blueprintjs/core';
 import axios from "axios";
 import auth from "./../auth/auth"
-import logo from "./assets/logo/logo.png"
-
-import Regex from "./util/regax"
 
 export default class LoginLayOut extends Component {
     
     state = { 
         isLoading: false,
+        isDisable:false,
         UserName:"",
         Password:"",
         showPassword:false,
@@ -26,8 +24,7 @@ export default class LoginLayOut extends Component {
     // handle Functions 
     handleChange=(event)=>{
         const {name,value} =event.target
-        this.setState({[name]:value})
-        this.Verify()
+        this.setState({[name]:value},()=>this.Verify())
     }
 
     handleLock=()=>{
@@ -35,7 +32,7 @@ export default class LoginLayOut extends Component {
     }
 
     Verify=()=>{
-        
+        console.log(this.state)
         let Error={
             UserName:false,
             Password:false
@@ -48,16 +45,19 @@ export default class LoginLayOut extends Component {
         if(this.state.UserName ===""){
             Error.UserName = true
             ErrorMessage.UserName="Email cannot be empty"
-        } else if(! Regex.Email.test(this.state.UserName)){
-            Error.UserName = true
-            ErrorMessage.UserName="Not valid Email"
-        }
+        } 
+        // else if(! Regex.Email.test(this.state.UserName)){
+        //     Error.UserName = true
+        //     ErrorMessage.UserName="Not valid Email"
+        // }
 
-        //Check Password
-        if(this.state.Password ===""){
-            Error.Password = true
-            ErrorMessage.Password="Password cannot be empty"
-        } else if(this.state.Password.length<8){
+        // //Check Password
+        // if(this.state.Password ===""){
+        //     Error.Password = true
+        //     ErrorMessage.Password="Password cannot be empty"
+        // } 
+        else if(this.state.Password.length<8){
+            console.log("Pass : "+this.state.Password)
             Error.Password = true
             ErrorMessage.Password="Pasword should have at least 8 character"
         }
@@ -75,9 +75,10 @@ export default class LoginLayOut extends Component {
 
     //Send Request
     DataSubmit=()=> {
+        this.Verify()
         let isValid= true;
         //check form input errors
-        Object.keys(this.state.Error).map((value)=>{
+        Object.keys(this.state.Error).map((value)=>function(){
             if(this.state.Error[value]){
                 isValid = false 
             }
@@ -106,15 +107,22 @@ export default class LoginLayOut extends Component {
                 console.log(error.data);
                 this.setState({isLoading:false}) 
                 });
-            }
+        }
 
         
         
       }
     componentWillMount(){
+        console.log(auth)
+        
         if(auth.isAuthenticated(this.props.allowedRoles)){
-            this.props.history.push("/user/dashboard");
+            this.props.history.push("/admin/dashboard");
         }
+    }
+
+    componentDidMount(){
+        console.log(this.state)
+        this.Verify()
     }
 
 
@@ -135,7 +143,7 @@ export default class LoginLayOut extends Component {
                 <div className="sign-in">
                     <div className="form1">
                         <div className="logo">
-                            <img width="100px"  />
+                            {/* <img alt ="userImage" width="100px"  /> */}
                         </div>
                         <div className="inputs">
                             
@@ -159,7 +167,7 @@ export default class LoginLayOut extends Component {
                             </FormGroup>
 
                             <FormGroup>
-                                <Button intent="primary" text="Log In" fill={true} onClick={this.DataSubmit}  loading={this.state.isLoading} />
+                                <Button intent="primary" text="Log In" fill={true} onClick={this.DataSubmit} disabled={false}  loading={this.state.isLoading} />
                             </FormGroup>
                             
                         </div>

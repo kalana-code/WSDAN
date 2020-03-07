@@ -1,12 +1,8 @@
 import React, { Component } from 'react';
-import {FormGroup,InputGroup,Button,RadioGroup, Radio,Tooltip,Intent} from '@blueprintjs/core';
-// import { DateInput } from "@blueprintjs/datetime";
-import axios from "axios";
+import {FormGroup,InputGroup,Button,RadioGroup, Radio} from '@blueprintjs/core';
 
 import '@blueprintjs/core/lib/css/blueprint.css';
 import "./style/register.css";
-import { DateInput } from "@blueprintjs/datetime";
-
 const emailRegex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 
