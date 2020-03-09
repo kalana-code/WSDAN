@@ -113,15 +113,12 @@ export default class LoginLayOut extends Component {
         
       }
     componentWillMount(){
-        console.log(auth)
-        
         if(auth.isAuthenticated(this.props.allowedRoles)){
             this.props.history.push("/admin/dashboard");
         }
     }
 
     componentDidMount(){
-        console.log(this.state)
         this.Verify()
     }
 

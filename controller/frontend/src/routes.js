@@ -1,6 +1,7 @@
 
-import Icons from "views/admin/Icons.jsx";
-import Question from "views/user/Question.jsx";
+import Icons from "views/Icons.jsx";
+import Question from "views/Question.jsx";
+import Network from "views/Network.jsx";
 
 export const adminRoute = [
   {
@@ -15,6 +16,13 @@ export const adminRoute = [
     name: "Icon",
     icon: "pe-7s-photo-gallery",
     component: Icons,
+    layout: "/admin"
+   },
+   {
+    path: "/network",
+    name: "Network Topology",
+    icon: "pe-7s-photo-gallery",
+    component: Network,
     layout: "/admin"
    }
 
