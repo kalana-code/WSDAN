@@ -13,9 +13,9 @@ export const adminRoute = [
    },
    {
     path: "/icon",
-    name: "Icon",
+    name: "Rule Setter",
     icon: "pe-7s-photo-gallery",
-    component: Icons,
+    component: Question,
     layout: "/admin"
    },
    {
