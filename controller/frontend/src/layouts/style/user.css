@@ -81,13 +81,12 @@ nav{
 }
 
 
-.container{
+.user_container{
   position: relative;
   top:50px;
   padding: 0px;
   height: calc(100% -  70px);
   width: 100%;
-  /* background-color:red; */
   display: flex;
   flex-flow: column wrap;
 }
@@ -97,7 +96,7 @@ nav{
   position: fixed;
   top:50;
   height: calc(100% -  70px);
-  width: 40px;
+  width: 170px;
   color: red;
   background-color:white;
   border-right:1px solid lightgrey;
@@ -107,7 +106,7 @@ nav{
   text-align: left;
   padding: 50px 0px 0px 0px;
   list-style: none;
-  width: 100px;
+ 
   float: right;
   display: flex;
   flex-direction: column;
@@ -117,30 +116,34 @@ nav{
 
 .side-bar-left .user-nav-link{
   /* font-size: 13px; */
-  color: #bebcbc;
+  color: #180909;
   padding: 10px 10px;
-  background:rgb(255, 255, 255);
+  /* background:rgb(255, 255, 255); */
   margin-bottom:10px ;
+  /* font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */
   text-decoration: none;
-  font-weight: 100;
+  text-align: right;
+  font-weight: 200;
   
 }
+
+
 .side-bar-left .user-nav-link:hover{
   border-right:3px solid rgb(44, 114, 245) ;
   background:rgb(248, 248, 248);
 }
 
-.active{ 
+ .active{ 
   border-right:3px solid rgb(44, 114, 245) ;
-  background:rgb(97, 69, 69);
-  color: #393a3b; 
+  background:rgb(248, 247, 247);
+  color: #000000; 
 }
 
-.main{
+.main_panel{
   position: relative;
-  left: 40px;
+  left: 170px;
   height: calc(100% );
-  width: calc(100% - 40px);
+  width: calc(100% - 170px);
   background:white;
 }
 

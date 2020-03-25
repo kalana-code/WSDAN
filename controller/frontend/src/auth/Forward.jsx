@@ -22,7 +22,7 @@ class Forward extends Component {
         }).then(response=>{
             if(response.status===200){
                 console.log("OK")
-                setTimeout(() => {  this.setState({IsLoading:false}); }, 2000);
+                setTimeout( this.setState({IsLoading:false}), 2000);
                 
             }else{
                 console.log("Error")

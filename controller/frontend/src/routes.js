@@ -1,5 +1,5 @@
 
-import Icons from "views/Icons.jsx";
+
 import Question from "views/Question.jsx";
 import Network from "views/Network.jsx";
 
