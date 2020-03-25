@@ -19,28 +19,44 @@ state ={
     ,noNode:true
     ,selectNode:[]
     ,selectCount:0 // used for select two nodes
+    ,selectNodeError:null
 };
 
 
 events = {
     select: function(event) {
       let { nodes } = event;
+      this.setState({selectNodeError:null})
+      let selectNode =[]
+      let selectCount  = this.state.selectCount;
       if(nodes[0] !== undefined){
-        let selectNode =[]
-        let selectCount  = this.state.selectCount;
         if(selectCount === 0){
           selectNode[selectCount] = this.getNodeData(nodes[0]);
           selectCount++
         }else{
-          selectNode = Object.assign({}, this.state.selectNode);
-          selectNode[selectCount] = this.getNodeData(nodes[0]);
-          selectCount--
+            selectNode = Object.assign(this.state.selectNode);
+            console.log(selectNode[0].id)
+            if(selectNode[0].id !== nodes[0] ){
+              selectNode[selectCount] = this.getNodeData(nodes[0]);
+              selectCount--
+            }else{
+              this.setState({selectNodeError:{
+                Error:true,
+                Message:"Cannot Select Same"
+              }})
+            }
+            
         }
-        this.setState({
-          selectNode:selectNode,selectCount:selectCount
-        } ,console.log(this.state.selectCount ,this.state.selectNode))
+       
+      }else{
+        // reset user select node when user select outside of nodes
+        selectCount = 0  
+        selectNode  = Object.assign([]);
       }
-      
+      // change statesa
+      this.setState({
+        selectNode:selectNode,selectCount:selectCount
+      })   
     }.bind(this),
 };
 
@@ -123,7 +139,7 @@ options = {
           },
        
       },
-    height: "500px",
+    height: "300px",
     layout: {
       randomSeed: 55
     },

@@ -4,9 +4,10 @@ import "net/http"
 
 // GrpNode used for geanarate Node information for network graph
 type GrpNode struct {
-	ID    int    `json:"id"`
-	Label string `json:"label"`
-	Group string `json:"group"`
+	ID       int      `json:"id"`
+	Label    string   `json:"label"`
+	Group    string   `json:"group"`
+	NodeData NodeData `json:"NodeData"`
 }
 
 // GrpNodeLink  used for keep ling information between two Nodes

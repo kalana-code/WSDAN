@@ -46,8 +46,14 @@ func (*db) GenarateNetworkTopology() (model.GrpData, error) {
 	nodes := []model.GrpNode{}
 	nodeIndex := 0
 
-	for _, Index := range allNodes {
-		nodes = append(nodes, model.GrpNode{ID: Index, Label: "Node " + strconv.Itoa(Index), Group: "Agent"})
+	for MAC, Index := range allNodes {
+		nodes = append(nodes,
+			model.GrpNode{
+				ID:       Index,
+				Label:    "Node " + strconv.Itoa(Index),
+				Group:    "Agent",
+				NodeData: instance[MAC],
+			})
 		nodeIndex++
 	}
 
@@ -55,7 +61,7 @@ func (*db) GenarateNetworkTopology() (model.GrpData, error) {
 	for MAC, NadeData := range instance {
 		for _, Neighbour := range NadeData.Neighbours {
 			currentLink := model.GrpNodeLink{}
-			currentLink.SetLink(allNodes[MAC], allNodes[Neighbour.MAC],strconv.Itoa(Neighbour.Bandwidth) + " mbps")
+			currentLink.SetLink(allNodes[MAC], allNodes[Neighbour.MAC], strconv.Itoa(Neighbour.Bandwidth)+" mbps")
 			nodeLinks = append(nodeLinks, currentLink)
 		}
 

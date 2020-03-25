@@ -28,7 +28,9 @@
     "react-router": "5.0.0",
     "react-router-dom": "5.0.0",
     "react-scripts": "3.0.0",
+    "react-sparklines": "^1.7.0",
     "react-toggle": "4.0.2",
+    "react-trend": "^1.2.5",
     "vis-react": "^0.5.1"
   },
   "devDependencies": {
