@@ -2,13 +2,14 @@
 import Icons from "views/Icons.jsx";
 import Question from "views/Question.jsx";
 import Network from "views/Network.jsx";
+import Home from "views/Home.jsx";
 
 export const adminRoute = [
   {
     path: "/dashboard",
     name: "Home",
     icon: "pe-7s-photo-gallery",
-    component: Question,
+    component: Home,
     layout: "/admin"
    },
    {

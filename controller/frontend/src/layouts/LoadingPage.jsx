@@ -8,7 +8,7 @@ export default class LoadingPage extends Component {
         return(
             <div className="centered">
                 <div className="spinner">
-                    <div className="double-bounce1"></div>
+                    <div className="double-bounce1"></div> 
                     <div className="double-bounce2"></div>
                 </div>
             </div>

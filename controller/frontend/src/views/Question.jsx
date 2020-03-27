@@ -9,7 +9,7 @@ class Question extends Component {
     return (
       <div className="content">
         <Grid fluid>
-          Kalana
+          This is Q
         </Grid>
       </div>
     );

@@ -10,9 +10,10 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
+	"time"
 )
 
-func main() {
+func sendNodeData() {
 	ip, mac, err := getIPAndMAC()
 
 	if err != nil {
@@ -28,18 +29,25 @@ func main() {
 		jsonData := map[string]interface{}{"Node": jsonNodeData, "Neighbours": jsonNeighboursValues}
 		jsonValue, _ := json.Marshal(jsonData)
 		fmt.Println(string(jsonValue))
-		// a := 1
-		// for a < 5 {
-		response, err := http.Post("http://192.168.8.102:8081/AddNodeInfo", "application/json", bytes.NewBuffer(jsonValue))
+
+		response, err := http.Post("http://192.168.8.100:8081/AddNodeInfo", "application/json", bytes.NewBuffer(jsonValue))
 		if err != nil {
 			fmt.Printf("The HTTP request failed with error %s\n", err)
 		} else {
 			data, _ := ioutil.ReadAll(response.Body)
 			fmt.Println(string(data))
 		}
-		// 	a++
-		// }
 	}
+}
+
+func doEvery(d time.Duration, f func()) {
+	for range time.Tick(d) {
+		f()
+	}
+}
+
+func main() {
+	doEvery(5000*time.Millisecond, sendNodeData)
 }
 
 func getIPAndMAC() (string, string, error) {

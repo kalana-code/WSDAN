@@ -16,10 +16,10 @@ class RouteManager extends Component {
         return ( <BrowserRouter>
             <Switch>
                 {/* <Route path="/Register" render={props => <RegisterLayOut {...props}/>} /> */}
-                <ProtectedRoute allowRoles={['ADMIN']} exact path="/admin/*" component={User} redirectPath="/login"  /> */}
+                <ProtectedRoute allowRoles={['ADMIN']} exact path="/admin/*" component={User} redirectPath="/login"  /> 
                 {/* { <ProtectedRoute allowRoles={['ADMIN']} exact path="/" component={User} redirectPath="/login"/> } */}
                 <Route path="/login"  render={props => <LoginLayOut {...props}/>} />
-                { auth.getRole() === "ADMIN" ?<Redirect to='/admin/dashboard'  />:<Redirect to='/login'  />}  }
+                { auth.getRole() === "ADMIN" ?<Redirect to='/admin/dashboard'  />:<Redirect to='/login'  />}
             </Switch>
           </BrowserRouter> );
     }
