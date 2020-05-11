@@ -97,7 +97,7 @@ export default class LoginLayOut extends Component {
                     localStorage.setItem('Token', 
                         response.data.Data.token);
                     this.setState({isLoading:false})
-                    this.props.history.push("/user");
+                    this.props.history.push("/admin");
 
                     
             }
@@ -113,6 +113,8 @@ export default class LoginLayOut extends Component {
         
       }
     componentWillMount(){
+        console.log("ROLE: ",this.props.allowedRoles)
+        console.log(auth.isAuthenticated(this.props.allowedRoles))
         if(auth.isAuthenticated(this.props.allowedRoles)){
             this.props.history.push("/admin/dashboard");
         }

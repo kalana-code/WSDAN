@@ -1,6 +1,6 @@
 
 import React, { Component } from "react";
-import Graph from "react-graph-vis";
+import Graph from "vis-react";
 import axios from "axios"
  
 // import "./styles.css";
@@ -8,15 +8,61 @@ import axios from "axios"
 import "./style/network/css/network-manipulation.css";
 
 import { Grid } from "react-bootstrap";
+import NodeStat from "components/NodeStat/NodeStat.jsx";
 
 class Network extends Component {
-  state ={
+state ={
     graph : {
       nodes: [],
       edges: []
     }
-  }
-  options = {
+    ,noNode:true
+    ,selectNode:[]
+    ,selectCount:0 // used for select two nodes
+    ,selectNodeError:null
+};
+
+
+events = {
+    select: function(event) {
+      let { nodes } = event;
+      this.setState({selectNodeError:null})
+      let selectNode =[]
+      let selectCount  = this.state.selectCount;
+      if(nodes[0] !== undefined){
+        if(selectCount === 0){
+          selectNode[selectCount] = this.getNodeData(nodes[0]);
+          selectCount++
+        }else{
+            selectNode = Object.assign(this.state.selectNode);
+            console.log(selectNode[0].id)
+            if(selectNode[0].id !== nodes[0] ){
+              selectNode[selectCount] = this.getNodeData(nodes[0]);
+              selectCount--
+            }else{
+              this.setState({selectNodeError:{
+                Error:true,
+                Message:"Cannot Select Same"
+              }})
+            }
+            
+        }
+       
+      }else{
+        // reset user select node when user select outside of nodes
+        selectCount = 0  
+        selectNode  = Object.assign([]);
+      }
+      // change statesa
+      this.setState({
+        selectNode:selectNode,selectCount:selectCount
+      })   
+    }.bind(this),
+};
+
+
+   
+options = {
     nodes: {
       shape: "dot",
       size: 16
@@ -32,7 +78,7 @@ class Network extends Component {
             color: "orange"
           }
         },
-        Node: {
+        Agents: {
             shape: "icon",
             color: "#FF9900", // orange
             icon: {
@@ -93,37 +139,52 @@ class Network extends Component {
           },
        
       },
-    height: "500px",
+    height: "300px",
     layout: {
-      randomSeed: 34
+      randomSeed: 55
     },
     physics: {
         enabled:true,
-      forceAtlas2Based: {
-        gravitationalConstant: -26,
-        centralGravity: 0.005,
-        springLength: 230,
-        springConstant: 0.18
-      },
-      maxVelocity: 146,
-      solver: "forceAtlas2Based",
-      timestep: 0.35,
-      stabilization: {
-        enabled: true,
-        iterations: 2000,
-        updateInterval: 25
-      }
+      // forceAtlas2Based: {
+      //   gravitationalConstant: -26,
+      //   centralGravity: 0.005,
+      //   springLength: 230,
+      //   springConstant: 0.18
+      // },
+      // maxVelocity: 146,
+      // solver: "forceAtlas2Based",
+      // timestep: 0.35,
+      // stabilization: {
+      //   enabled: true,
+      //   iterations: 20,
+      //   updateInterval: 25
+      // }
     }
-  };
-  getData=()=>{
+};
+
+getData=()=>{
     axios.get(`http://localhost:8081/GetNodeInfo`).then(response => {
       if(response.status === 200){
-        this.setState({graph:response.data.Data.graphData});       
+        if(response.data.Data.graphData.nodes.length>0){
+          this.setState({graph:response.data.Data.graphData});
+          this.setState({noNode:false})
+        }else{
+          this.setState({noNode:true})
+        }
+
       }
     },error=>{
       console.log(error);
     });
-  }
+};
+
+getEdges = data => {
+  console.log(data);
+};
+
+getNodes = data => {
+  console.log(data);
+};
 
 async componentDidMount() {
     try {
@@ -133,22 +194,45 @@ async componentDidMount() {
     } catch(e) {
       console.log(e);
     }
+};
+
+// we have  clear time interval 
+// componentWillUnmount = () => {             // ***
+//   // Is our timer running?                 // ***
+//   if (this.timerHandle) {                  // ***
+//       // Yes, clear it                     // ***
+//       clearInterval(this.timerHandle);      // ***
+//       this.timerHandle = 0;                // ***
+//   }                                        // ***
+// };
+getNodeData=(NodeID)=>{
+  for (var key in this.state.graph.nodes) {
+    var obj = this.state.graph.nodes[key];
+    if(obj.id ===NodeID){
+      return obj;
+    }
+    
+  }
+
+  return "kalana"
+
 }
 
   render() {
     return (
       <div className="content">
         <Grid fluid>
-          {/* <App /> */}
+          <p>{this.setState.noNode ? "Not identified any node": "" }</p>
           <Graph
             graph={this.state.graph}
             options={this.options}
-            //events={events}
-            getNetwork={network => {
-              //  if you want access to vis.js network api you can set the state in a parent component using this property
-            }}
+            events={this.events}
+            getEdges={this.getEdges}
+            getNodes={this.getNodes}
+            vis={vis => (this.vis = vis)}
           />
         </Grid>
+        <NodeStat SelectedNodes ={this.state.selectNode}/>
       </div>
     );
   }

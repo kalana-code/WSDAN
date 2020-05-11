@@ -4,9 +4,10 @@ import "net/http"
 
 // GrpNode used for geanarate Node information for network graph
 type GrpNode struct {
-	ID    int    `json:"id"`
-	Label string `json:"label"`
-	Group string `json:"group"`
+	ID       int      `json:"id"`
+	Label    string   `json:"label"`
+	Group    string   `json:"group"`
+	NodeData NodeData `json:"NodeData"`
 }
 
 // GrpNodeLink  used for keep ling information between two Nodes
@@ -14,15 +15,38 @@ type GrpNodeLink struct {
 	From               int    `json:"from"`
 	To                 int    `json:"to"`
 	Label              string `json:"label"`
-	arrowStrikethrough bool
-	length             int
-	dashes             bool
+	ArrowStrikethrough bool   `json:"arrowStrikethrough"`
+	Length             int    `json:"length"`
+	Dashes             bool   `json:"dashes"`
+	Arrows             Arrow  `json:"arrows"`
 }
 
-func (obj *GrpNodeLink) SetLink() {
-	obj.arrowStrikethrough = true
-	obj.length = 150
-	obj.dashes = true
+//SetLink used for set default value in edge
+func (obj *GrpNodeLink) SetLink(From int, To int, Label string) {
+	obj.From = From
+	obj.To = To
+	obj.Label = Label
+	obj.ArrowStrikethrough = false
+	obj.Length = 150
+	obj.Dashes = true
+	// set Arrow head
+	obj.Arrows = Arrow{}
+	obj.Arrows.To = ArrowStyle{Enabled: false}
+	obj.Arrows.From = ArrowStyle{Enabled: false}
+	obj.Arrows.Middle = ArrowStyle{Enabled: false}
+
+}
+
+// Arrow keep arrow header style
+type Arrow struct {
+	To     ArrowStyle `json:"to"`
+	Middle ArrowStyle `json:"middle"`
+	From   ArrowStyle `json:"from"`
+}
+
+// ArrowStyle keep Arrow style
+type ArrowStyle struct {
+	Enabled bool `json:"enabled"`
 }
 
 // GrpData keeps network map

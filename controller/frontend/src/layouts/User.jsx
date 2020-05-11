@@ -98,9 +98,9 @@ class User extends Component {
                     </div>  
                      
                 </nav>
-                <div className="container">
+                <div className="user_container">
                    <Sidebar routes={adminRoute} {...this.props}/>
-                    <div className="main">
+                    <div className="main_panel">
                         <div className="Tag">
                             <p className="Tag-Name">{this.getBrandText(this.props.location.pathname)}</p>
                         </div>

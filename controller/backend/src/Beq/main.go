@@ -1,11 +1,10 @@
 package main
 
 import (
+	routes "Beq/routes"
 	"log"
 	"net/http"
 	"os"
-
-	routes "Beq/routes"
 
 	"github.com/joho/godotenv"
 )

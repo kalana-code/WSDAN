@@ -3,6 +3,7 @@ package routes
 import (
 	"Beq/api/genaral"
 	"Beq/auth"
+	"Beq/nodes/service"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -13,8 +14,15 @@ func Handlers() *mux.Router {
 
 	r := mux.NewRouter().StrictSlash(true)
 	r.Use(CommonMiddleware)
+	//Node information handling
+	//GET
+	r.HandleFunc("/Info", genaral.Information).Methods("GET", "OPTIONS")
+	r.HandleFunc("/GetNodeInfo", service.GetNodeInfo).Methods("GET", "OPTIONS")
+	//POST
+	r.HandleFunc("/AddNodeInfo", service.AddNodeInfo).Methods("POST", "OPTIONS")
 
-	r.HandleFunc("/Register/Student", genaral.Register).Methods("POST", "OPTIONS")
+	// user registrarion
+	// r.HandleFunc("/Register/Student", genaral.Register).Methods("POST", "OPTIONS")
 	r.HandleFunc("/Student/Login", genaral.Login).Methods("POST", "OPTIONS")
 
 	// Auth route
@@ -22,9 +30,6 @@ func Handlers() *mux.Router {
 	// use middleware
 	s.Use(auth.JwtVerify)
 	s.HandleFunc("/verify", genaral.Verify).Methods("GET", "OPTIONS")
-	// s.HandleFunc("/user/{id}", controllers.GetUser).Methods("GET")
-	// s.HandleFunc("/user/{id}", controllers.UpdateUser).Methods("PUT")
-	// s.HandleFunc("/user/{id}", controllers.DeleteUser).Methods("DELETE")
 	return r
 }
 

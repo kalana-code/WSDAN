@@ -36,20 +36,23 @@ class Auth{
     let Token = localStorage.getItem('Token')
     try{
       let jwt_Decode = jwtDecode(Token)
+      console.log(Token)
       this.user = new user(jwt_Decode)
       // check Expire Time
       if (Date.now() >= jwt_Decode.exp * 1000) {
         this.authenticated = false;
       }
-      console.log(allowedRoles.includes(jwt_Decode.Role))
-      console.log(jwt_Decode.Role)
       console.log(allowedRoles)
-      // check Roles
-      if(! allowedRoles.includes(jwt_Decode.Role)){
-        this.authenticated = false;
-      }
+      console.log(jwt_Decode.Role)
+      // console.log(jwt_Decode.Role)
+      // console.log(allowedRoles)
+      // // check Roles
+      // if(! allowedRoles.includes(jwt_Decode.Role)){
+      //   this.authenticated = false;
+      // }
       
-    }catch{
+    }catch(e){
+      console.log(e)
       this.authenticated = false;
     }
     return this.authenticated

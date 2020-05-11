@@ -42,7 +42,7 @@ func (obj *Response) BadRequest() {
 	obj.Message = "Bad Request"
 }
 
-// InternalServer set as Bad Request
+// InternalServerError set Internal server error  Request
 func (obj *Response) InternalServerError() {
 	obj.Code = http.StatusInternalServerError
 	obj.Status = "Failed"

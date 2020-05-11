@@ -67,7 +67,7 @@ func GetNodeInfo(w http.ResponseWriter, r *http.Request) {
 		data["graphData"] = GraphData
 
 		resp.Code = http.StatusOK
-		resp.Message = "Data Base Updated"
+		resp.Message = "Updated time: "
 		resp.Data = data
 		w.WriteHeader(http.StatusOK)
 
