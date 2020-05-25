@@ -1,6 +1,5 @@
 package main
 
-<<<<<<< HEAD
 import (
 	"bytes"
 	"encoding/json"
@@ -85,10 +84,4 @@ func getNeighbours() ([]string, error) {
 	re := regexp.MustCompile(`([a-z0-9]+)\:([a-z0-9]+)\:([a-z0-9]+)\:([a-z0-9]+)\:([a-z0-9]+)\:([a-z0-9]+)`)
 	match := re.FindAllString(output, -1)
 	return match[2:], nil
-=======
-import "fmt"
-
-func main() {
-	fmt.Print("Kalana")
->>>>>>> f298c4eec634aa21bde2a5be0d4bf91e78d5cc14
 }

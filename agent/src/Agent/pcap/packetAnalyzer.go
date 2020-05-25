@@ -12,11 +12,11 @@ import (
 )
 
 var (
-	device      string = "en0"
+	device      string = "wlan0"
 	snapshotLen int32  = 1024
 	promiscuous bool   = false
 	err         error
-	timeout     time.Duration = 30 * time.Second
+	timeout     time.Duration = 1 * time.Second
 	handle      *pcap.Handle
 )
 
@@ -27,6 +27,14 @@ func main() {
 		log.Fatal(err)
 	}
 	defer handle.Close()
+
+	// Set filter
+	var filter string = "icmp"
+	err = handle.SetBPFFilter(filter)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Only capturing TCP port 80 packets.")
 
 	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
 	for packet := range packetSource.Packets() {
