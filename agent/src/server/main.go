@@ -17,7 +17,7 @@ type NodeDetails struct {
 }
 
 type NodeNeighboursDetails struct {
-	Bandwidth int    `json:"Bandwidth"`
+	Bandwidth string `json:"Bandwidth"`
 	MAC       string `json:"MAC"`
 }
 

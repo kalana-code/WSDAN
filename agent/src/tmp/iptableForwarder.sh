@@ -10,3 +10,8 @@ iptables -P OUTPUT ACCEPT
 iptables -L -v
 
 iptables -t nat -A PREROUTING -j DNAT --to-destination 192.168.0.4
+
+
+i2c-dev
+batman-adv
+r8712u
