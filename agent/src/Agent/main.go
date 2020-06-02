@@ -1,58 +1,77 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
+	"Agent/database"
+	"Agent/input"
 	"fmt"
-	"io/ioutil"
+	"log"
 	"net"
-	"net/http"
-	"os/exec"
-	"regexp"
 	"strings"
 	"time"
+
+	"github.com/google/gopacket"
+	"github.com/google/gopacket/pcap"
 )
 
-func sendNodeData() {
-	ip, mac, err := getIPAndMAC()
-
-	if err != nil {
-		fmt.Println("Not able to get IP and MAC : ", err)
-	} else {
-		//neighbours, _ := getNeighbours()
-		jsonNodeData := map[string]interface{}{"NAME": "Node", "GROUP": "Gateway", "IP": ip, "MAC": mac}
-		jsonNeighboursValues := make([]interface{}, 1)
-		// for i, nbMAC := range neighbours {
-		jsonNeighbourData := map[string]interface{}{"MAC": "93:FB:E5:3D:0E:CF", "Bandwidth": 10}
-		jsonNeighboursValues[0] = jsonNeighbourData
-		// }
-		jsonData := map[string]interface{}{"Node": jsonNodeData, "Neighbours": jsonNeighboursValues}
-		jsonValue, _ := json.Marshal(jsonData)
-		fmt.Println(string(jsonValue))
-
-		response, err := http.Post("http://192.168.8.100:8081/AddNodeInfo", "application/json", bytes.NewBuffer(jsonValue))
-		if err != nil {
-			fmt.Printf("The HTTP request failed with error %s\n", err)
-		} else {
-			data, _ := ioutil.ReadAll(response.Body)
-			fmt.Println(string(data))
-		}
-	}
-}
-
-func doEvery(d time.Duration, f func()) {
-	for range time.Tick(d) {
-		f()
-	}
-}
+var (
+	device        string = "wlan0"
+	snapshotLen   int32  = 1024
+	promiscuous   bool   = false
+	err           error
+	timeout       time.Duration = 30 * time.Second
+	handle        *pcap.Handle
+	ruleConf      *database.RuleConfiguration
+	found         bool
+	encapPacket   input.EncapsulatedPacket
+	controllerIP  string = "192.168.0.4"
+	controllerMAC string = "B8:27:EB:9A:5E:A5"
+)
 
 func main() {
-	doEvery(5000*time.Millisecond, sendNodeData)
+	db := database.CreateDatabase()
+	newRule1 := database.RuleConfiguration{EnacapPcktDstIP: "192.168.0.4", EnacapPcktDstMAC: "b8:27:eb:9a:5e:a5", Action: "ACCEPT"}
+	database.CreateRule(db, "192.168.0.5", newRule1)
+	database.ViewRules(db)
+
+	ipAddr, macAddr, err := getIPAndMAC()
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Open device
+	handle, err = pcap.OpenLive(device, snapshotLen, promiscuous, timeout)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer handle.Close()
+
+	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
+	for packet := range packetSource.Packets() {
+		pcktDesctinationIP := input.GetPacketDstIP(packet)
+		ruleConf, found = database.CheckRule(db, pcktDesctinationIP)
+		if found {
+			encapPacket = input.EncapsulatedPacket{
+				SrcIP:  ipAddr,
+				DstIP:  ruleConf.EnacapPcktDstIP,
+				SrcMAC: macAddr,
+				DstMAC: ruleConf.EnacapPcktDstMAC,
+				Packet: packet,
+			}
+		} else {
+			encapPacket = input.EncapsulatedPacket{
+				SrcIP:  ipAddr,
+				DstIP:  controllerIP,
+				SrcMAC: macAddr,
+				DstMAC: controllerMAC,
+				Packet: packet,
+			}
+		}
+		input.CreateAndSendEncapsulatedPacket(handle, encapPacket)
+	}
 }
 
 func getIPAndMAC() (string, string, error) {
 	var currentIP, currentNetworkHardwareName string
-	currentNetworkHardwareName = "en0"
+	currentNetworkHardwareName = "wlan0"
 	netInterface, err := net.InterfaceByName(currentNetworkHardwareName)
 
 	if err != nil {
@@ -73,15 +92,31 @@ func getIPAndMAC() (string, string, error) {
 	return ipAddr, hwAddr.String(), nil
 }
 
-func getNeighbours() ([]string, error) {
-	out, err := exec.Command("sudo", "batctl", "n").Output()
+// func main() {
+// 	db := database.CreateDatabase()
 
-	if err != nil {
-		return nil, err
-	}
+// 	newRule1 := database.RuleConfiguration{EnacapPcktDstIP: "192.168.0.4", EnacapPcktDstMAC: "b8:27:eb:9a:5e:a5", Action: "ACCEPT"}
+// 	database.CreateRule(db, "192.168.0.5", newRule1)
+// 	database.ViewRules(db)
+// 	api.SendNodeData("192.168.0.4", "8081", "AddNodeInfo")
+// 	// func main() {
+// 	// 	doEvery(5000*time.Millisecond, sendNodeData)
+// 	// }
 
-	output := string(out[:])
-	re := regexp.MustCompile(`([a-z0-9]+)\:([a-z0-9]+)\:([a-z0-9]+)\:([a-z0-9]+)\:([a-z0-9]+)\:([a-z0-9]+)`)
-	match := re.FindAllString(output, -1)
-	return match[2:], nil
-}
+// }
+
+// // doEvery is used to execute a function periodically
+// func doEvery(d time.Duration, f func()) {
+// 	for range time.Tick(d) {
+// 		f()
+// 	}
+// }
+
+// Set filter
+// var filter string = "icmp"
+// err = handle.SetBPFFilter(filter)
+// if err != nil {
+// 	log.Fatal(err)
+// }
+// fmt.Println("Only capturing ICMP packets")
+// ip layer for forwarding packet
