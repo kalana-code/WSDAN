@@ -1,10 +1,17 @@
 package server
 
 import (
+	"Agent/flowmanager"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
+)
+
+var (
+	infoLog  string = "INFO: [SH]:"
+	errorLog string = "ERROR: [SH]:"
 )
 
 //NodeDetails is used to store node data
@@ -27,27 +34,26 @@ type NodeData struct {
 	Neighbours []NodeNeighboursDetails `json:"Neighbours"`
 }
 
-// func main() {
-// 	fmt.Print("Start initialization !!!\n")
-// 	router := mux.NewRouter().StrictSlash(true)
-// 	router.HandleFunc("/AddNodeInfo", homeLink)
-// 	log.Fatal(http.ListenAndServe(":8081", router))
-// 	fmt.Println("Starting the application...")
-// }
+// Server is used to retrieve data from the controller
+func Server() {
+	log.Print(infoLog, "Starting Server")
+	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/AddNodeInfo", addNodeRule)
+	log.Println(http.ListenAndServe(":8081", router))
+}
 
-func homeLink(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Recieved !!!")
-	nodeDet := NodeData{}
-	err := json.NewDecoder(r.Body).Decode(&nodeDet)
+func addNodeRule(w http.ResponseWriter, r *http.Request) {
+	log.Print(infoLog, "Adding Node Rule")
+	rule := flowmanager.ControllerRuleConfiguration{}
+	err := json.NewDecoder(r.Body).Decode(&rule)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	jsonData, jsonErr := json.Marshal(nodeDet)
+	jsonData, jsonErr := json.Marshal(rule)
 	if jsonErr != nil {
-		log.Fatal(jsonErr)
+		log.Println(errorLog, "Recieved Rule Error:", jsonErr)
 	}
-
-	fmt.Println(string(jsonData))
-
+	log.Print(infoLog, "Recieved Rule:", jsonData)
+	flowmanager.RuleUpdater(rule)
 }

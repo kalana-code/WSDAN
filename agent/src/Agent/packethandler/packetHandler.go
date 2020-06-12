@@ -1,12 +1,10 @@
 package packethandler
 
 import (
-	"Agent/database"
 	"Agent/flowmanager"
-	"fmt"
+	"Agent/initializer"
 	"log"
 	"net"
-	"strings"
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
@@ -20,48 +18,49 @@ var (
 	dataPayload []byte         = nil
 	buffer      gopacket.SerializeBuffer
 	err         error
+	infoLog     string = "INFO: [PH]:"
+	errorLog    string = "ERROR: [PH]:"
 )
 
-// PacketAnalyzer is used to anaylize the packet and create a new paccket
-func PacketAnalyzer(db map[string]database.RuleConfiguration, packet gopacket.Packet) gopacket.SerializeBuffer {
-	log.Println("Starting PacketAnalyzer ...!")
+// PacketAnalyzer is used to anaylize an input packet and create a new output packet
+func PacketAnalyzer(packet gopacket.Packet) gopacket.SerializeBuffer {
+	log.Println(infoLog, "Starting PacketAnalyzer")
 	packetDetails := flowmanager.PacketDetails{}
 	ipLayer := packet.Layer(layers.LayerTypeIPv4)
 	if ipLayer != nil {
-		log.Println("IPv4 layer detected.")
+		log.Println(infoLog, "IPv4 layer detected.")
 		ipl, _ = ipLayer.(*layers.IPv4)
 		packetDetails.DstIP = ipl.DstIP.String()
 		packetDetails.Protocol = ipl.Protocol.String()
-		fmt.Println(packetDetails.Protocol)
 	}
 	udpLayer := packet.Layer(layers.LayerTypeUDP)
 	if udpLayer != nil {
-		log.Println("UDP layer detected.")
+		log.Println(infoLog, "UDP layer detected.")
 		udpl, _ = udpLayer.(*layers.UDP)
 	}
 	icmpLayer := packet.Layer(layers.LayerTypeICMPv4)
 	if icmpLayer != nil {
-		log.Println("ICMP layer detected.")
+		log.Println(infoLog, "ICMP layer detected.")
 		icmpl, _ = icmpLayer.(*layers.ICMPv4)
 	}
 	tcpLayer := packet.Layer(layers.LayerTypeTCP)
 	if tcpLayer != nil {
-		log.Println("TCP layer detected.")
+		log.Println(infoLog, "TCP layer detected.")
 		tcpl, _ = tcpLayer.(*layers.TCP)
 	}
 	applicationLayer := packet.ApplicationLayer()
 	if applicationLayer != nil {
-		log.Println("Application layer detected.")
+		log.Println(infoLog, "Application layer detected.")
 		dataPayload = applicationLayer.Payload()
 	}
-	ethernetLayer := generateEthernetLayer(db, packetDetails)
+	ethernetLayer := generateEthernetLayer(packetDetails)
 	options := gopacket.SerializeOptions{
 		ComputeChecksums: true,
 		FixLengths:       true,
 	}
 	buffer = gopacket.NewSerializeBuffer()
 	if udpLayer != nil {
-		log.Println("UDP packet processing.")
+		log.Println(infoLog, "UDP packet processing.")
 		udpl.SetNetworkLayerForChecksum(ipl)
 		err = gopacket.SerializeLayers(buffer, options,
 			ethernetLayer,
@@ -70,10 +69,10 @@ func PacketAnalyzer(db map[string]database.RuleConfiguration, packet gopacket.Pa
 			gopacket.Payload(dataPayload),
 		)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(errorLog, "UDP packet serilizing", err)
 		}
 	} else if icmpLayer != nil {
-		log.Println("ICMP packet processing.")
+		log.Println(infoLog, "ICMP packet processing.")
 		err = gopacket.SerializeLayers(buffer, options,
 			ethernetLayer,
 			ipl,
@@ -81,10 +80,10 @@ func PacketAnalyzer(db map[string]database.RuleConfiguration, packet gopacket.Pa
 			gopacket.Payload(dataPayload),
 		)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(errorLog, "ICMP packet serilizing", err)
 		}
 	} else if tcpLayer != nil {
-		log.Println("TCP packet processing.")
+		log.Println(infoLog, "TCP packet processing.")
 		tcpl.SetNetworkLayerForChecksum(ipl)
 		err = gopacket.SerializeLayers(buffer, options,
 			ethernetLayer,
@@ -93,16 +92,16 @@ func PacketAnalyzer(db map[string]database.RuleConfiguration, packet gopacket.Pa
 			gopacket.Payload(dataPayload),
 		)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(errorLog, "TCP packet serilizing", err)
 		}
 	}
 	return buffer
 }
 
-func generateEthernetLayer(db map[string]database.RuleConfiguration, packetDetails flowmanager.PacketDetails) *layers.Ethernet {
-	log.Println("Generating Ethernet Layer ...!")
-	ruleConfiguration := flowmanager.RuleChecker(db, packetDetails)
-	_, hardwareAddrs, _ := getIPAndMAC()
+func generateEthernetLayer(packetDetails flowmanager.PacketDetails) *layers.Ethernet {
+	log.Println(infoLog, "Generating Ethernet Layer")
+	ruleConfiguration := flowmanager.RuleChecker(packetDetails)
+	_, hardwareAddrs, _ := initializer.GetIPAndMAC()
 	srcMAC, _ := net.ParseMAC(hardwareAddrs)
 	dstMAC, _ := net.ParseMAC(ruleConfiguration.DstMAC)
 	ethernetLayer := &layers.Ethernet{
@@ -111,27 +110,4 @@ func generateEthernetLayer(db map[string]database.RuleConfiguration, packetDetai
 		EthernetType: layers.EthernetType(0x0800),
 	}
 	return ethernetLayer
-}
-
-func getIPAndMAC() (string, string, error) {
-	var currentIP, currentNetworkHardwareName string
-	currentNetworkHardwareName = "wlan0"
-	netInterface, err := net.InterfaceByName(currentNetworkHardwareName)
-
-	if err != nil {
-		return "nil", "nil", err
-	}
-
-	macAddress := netInterface.HardwareAddr
-	addresses, err := netInterface.Addrs()
-	currentIP = addresses[0].String()
-	ipAddr := currentIP[:strings.IndexByte(currentIP, '/')]
-	hwAddr, err := net.ParseMAC(macAddress.String())
-
-	if err != nil {
-		fmt.Println("No able to parse MAC address : ", err)
-		return "nil", "nil", err
-	}
-
-	return ipAddr, hwAddr.String(), nil
 }
