@@ -10,12 +10,13 @@ import (
 //Dispurse used for dispurse jobs to Node
 func Dispurse(job *model.Job) {
 	switch job.Type {
-	case 1:
+	case model.TypeAddRule:
 		// add rule
 		addRule()
 		break
-	case 2:
+	case model.TypeRemoveRule:
 		// remove rule
+		removeRule()
 		break
 	case 3:
 		// add flow

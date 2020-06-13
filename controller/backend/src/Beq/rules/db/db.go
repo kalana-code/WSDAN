@@ -58,16 +58,17 @@ func (*RuleDB) FindRuleByRuleID(RuleID string) (*model.RulesDataRow, error) {
 }
 
 //RemoveRuleByRuleID used for remove Rule by RuleID
-func (*RuleDB) RemoveRuleByRuleID(RuleID string) (string, error) {
+func (*RuleDB) RemoveRuleByRuleID(RuleID string) (string, *string, error) {
 	if instance != nil {
 		_, ok := instance[RuleID]
 		if ok {
+			NodeIP := instance[RuleID].NodeIP
 			delete(instance, RuleID)
-			return "Successfully Removed A Rule ", nil
+			return "Successfully Removed A Rule ", &NodeIP, nil
 		}
-		return "Not Exist Any Rule For Given RuleID ", nil
+		return "Not Exist Any Rule For Given RuleID ", nil, nil
 	}
-	return "No Data Base Initiate", errors.New("No Data Base Initiate")
+	return "No Data Base Initiate", nil, errors.New("No Data Base Initiate")
 }
 
 //RemoveRulesByFlowID used for remove Rule by RuleID
@@ -101,6 +102,32 @@ func (*RuleDB) GetAllRules() (*[]model.Rule, error) {
 		return &rules, nil
 	}
 	return nil, errors.New("No Data Base Initiate")
+}
+
+//IsSet used for get Rule set State
+func (*RuleDB) IsSet(RuleID string) (bool, error) {
+	if instance != nil {
+		rule, ok := instance[RuleID]
+		if ok {
+
+			return rule.IsSet, nil
+		}
+		return false, errors.New("Not Exist Any Rule For Given RuleID")
+	}
+	return false, errors.New("No Data Base Initiate")
+}
+
+//DispursedRule used for set Rule set State
+func (*RuleDB) DispursedRule(RuleID string) error {
+	if instance != nil {
+		rule, ok := instance[RuleID]
+		if ok {
+			rule.IsSet = true
+			return nil
+		}
+		return errors.New("Not Exist Any Rule For Given RuleID")
+	}
+	return errors.New("No Data Base Initiate")
 }
 
 //FindRuleByFlowID used for get Rule bu RuleID

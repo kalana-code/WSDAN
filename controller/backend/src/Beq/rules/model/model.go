@@ -4,11 +4,13 @@ import "net/http"
 
 //RulesDataRow is used in DataBase
 type RulesDataRow struct {
-	FlowID    string `json:"FlowID"`
-	NodeID    string `json:"NodeID"`
-	DstIP     string `json:"DstIP"`
-	Interface string `json:"Interface"`
-	DstMAC    string `json:"DstMAC"`
+	FlowID    string
+	NodeID    string
+	DstIP     string
+	Interface string
+	DstMAC    string
+	NodeIP    string
+	IsSet     bool
 }
 
 //Rule is used for add a rule for Node
@@ -19,6 +21,7 @@ type Rule struct {
 	DstIP     string `json:"DstIP"`
 	Interface string `json:"Interface"`
 	DstMAC    string `json:"DstMAC"`
+	NodeIP    string `json:"NodeIP"`
 }
 
 //Populate populating the data
@@ -28,6 +31,7 @@ func (obj *Rule) Populate(RuleID string, data RulesDataRow) {
 	obj.DstMAC = data.DstMAC
 	obj.FlowID = data.FlowID
 	obj.Interface = data.Interface
+	obj.NodeIP = data.NodeIP
 }
 
 //StateRequest is used for request node state

@@ -42,13 +42,19 @@ func AddRule(w http.ResponseWriter, r *http.Request) {
 		} else {
 			log.Println("INFO: [RU]: Added Rule Successfully")
 			rulesDb.AddRule(RuleData)
-			jobModel := JobModel.Job{
-				IP:          RuleData.DstIP,
-				Type:        JobModel.RuleDispurse,
-				TaskDetails: RuleData,
-			}
+			// jobModel := JobModel.Job{
+			// 	IP:          RuleData.DstIP,
+			// 	Type:        JobModel.RuleDispurse,
+			// 	TaskDetails: RuleData,
+			// }
 			// jobModel.IP =
-			dispurserDb.AddJob(jobModel)
+			dispurserDb.AddJob(
+				JobModel.Job{
+					NodeIP:      RuleData.NodeIP,
+					Type:        JobModel.TypeAddRule,
+					TaskDetails: RuleData,
+				},
+			)
 			resp.Code = http.StatusOK
 			resp.Message = "Data Base Updated"
 			resp.Data = nil
@@ -100,14 +106,25 @@ func RemoveRuleByRuleID(w http.ResponseWriter, r *http.Request) {
 	resp.Default()
 	rules := db.GetRuleStore()
 	RuleID := mux.Vars(r)["RuleID"]
-	Message, err := rules.RemoveRuleByRuleID(RuleID)
+	Message, NodeIP, err := rules.RemoveRuleByRuleID(RuleID)
 
 	if err != nil {
 		log.Println("ERROR: Payload Error", err)
 		resp.InternalServerError()
 		w.WriteHeader(http.StatusBadRequest)
 	} else {
-		log.Println("INFO: [RU]: Success Remove Rule By RuleID Process")
+		log.Println("INFO: [RU]: " + Message)
+		if NodeIP != nil {
+			jobModel := JobModel.Job{
+				NodeIP: *NodeIP,
+				Type:   JobModel.TypeRemoveRule,
+				TaskDetails: JobModel.RemoveRuleJob{
+					RuleID: RuleID,
+				},
+			}
+			// jobModel.IP =
+			dispurserDb.AddJob(jobModel)
+		}
 		resp.Code = http.StatusOK
 		resp.Message = Message
 		w.WriteHeader(http.StatusOK)
