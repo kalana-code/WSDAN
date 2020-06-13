@@ -41,15 +41,13 @@ func (obj *JobQueue) AddJob(Job model.Job) error {
 //GetJob  is used for get a JOB
 // pre condition check jpbqueue should be non empty before proceeding this
 // function
-func (obj *JobQueue) GetJob(Job model.Job) (*model.Job, error) {
+func (obj *JobQueue) GetJob(Job model.Job) (interface{}, error) {
 	if instance.List != nil {
 		if instance.List.Back() != nil {
 			job := instance.List.Front().Value
 			instance.List.Remove(instance.List.Front())
-			return (*user.job)job, nil
+			return job, nil
 		}
-
 	}
-	return errors.New("No Data Base Initiate")
-
+	return nil, errors.New("No Data Base Initiate")
 }

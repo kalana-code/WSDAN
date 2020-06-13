@@ -3,6 +3,7 @@ package main
 import (
 	"Beq/api/genaral/model"
 	"Beq/api/genaral/utils"
+	dispurserQueue "Beq/dispurser/db"
 	routes "Beq/routes"
 	"container/list"
 	"fmt"
@@ -64,14 +65,13 @@ func packetHandler(task *list.List) {
 
 }
 
-func requestDispurser(task *list.List) {
+func requestDispurser(task *dispurserQueue.JobQueue) {
 
 	log.Println("INFO: [RD]: Request Dispurser Is Activeted")
 	for {
-		
-		if task.Back() != nil {
-			// fmt.Println("[R]-> Remove", task.Front().Value)
-			task.Remove(task.Front())
+		if task.List.Back() != nil {
+			fmt.Println("[R]-> Remove", task.List.Front().Value)
+			task.List.Remove(task.List.Front())
 		}
 	}
 
@@ -79,12 +79,10 @@ func requestDispurser(task *list.List) {
 
 func main() {
 	log.Println("INFO: [CO]: Controller -- ")
-
-	task := list.New()
-
+	queue := dispurserQueue.GetRequestQueue()
 	go server()
-	go packetHandler(task)
-	go requestDispurser(task)
+	// go packetHandler()
+	go requestDispurser(queue)
 	exit()
 }
 

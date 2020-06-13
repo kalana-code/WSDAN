@@ -34,7 +34,7 @@ func InsertUser(User model.UserInfo) model.InnerResponse {
 
 }
 
-// FindUser already exist in dataBase
+// FindUser used for find a user
 func FindUser(User model.UserLogin) model.InnerResponse {
 	userInfo := &model.UserInfo{}
 	resp := model.InnerResponse{}

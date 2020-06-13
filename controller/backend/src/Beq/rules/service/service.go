@@ -1,6 +1,8 @@
 package service
 
 import (
+	dispurserQueue "Beq/dispurser/db"
+	JobModel "Beq/dispurser/model"
 	"Beq/rules/db"
 	"Beq/rules/model"
 	"encoding/json"
@@ -10,6 +12,8 @@ import (
 
 	"github.com/gorilla/mux"
 )
+
+var dispurserDb = dispurserQueue.GetRequestQueue()
 
 // AddRule rules
 func AddRule(w http.ResponseWriter, r *http.Request) {
@@ -38,6 +42,13 @@ func AddRule(w http.ResponseWriter, r *http.Request) {
 		} else {
 			log.Println("INFO: [RU]: Added Rule Successfully")
 			rulesDb.AddRule(RuleData)
+			jobModel := JobModel.Job{
+				IP:          RuleData.DstIP,
+				Type:        JobModel.RuleDispurse,
+				TaskDetails: RuleData,
+			}
+			// jobModel.IP =
+			dispurserDb.AddJob(jobModel)
 			resp.Code = http.StatusOK
 			resp.Message = "Data Base Updated"
 			resp.Data = nil
