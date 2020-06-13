@@ -5,6 +5,7 @@ import (
 	JobModel "Beq/dispurser/model"
 	"Beq/rules/db"
 	"Beq/rules/model"
+	sdb "Beq/settings/db"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -42,19 +43,18 @@ func AddRule(w http.ResponseWriter, r *http.Request) {
 		} else {
 			log.Println("INFO: [RU]: Added Rule Successfully")
 			rulesDb.AddRule(RuleData)
-			// jobModel := JobModel.Job{
-			// 	IP:          RuleData.DstIP,
-			// 	Type:        JobModel.RuleDispurse,
-			// 	TaskDetails: RuleData,
-			// }
-			// jobModel.IP =
-			dispurserDb.AddJob(
-				JobModel.Job{
-					NodeIP:      RuleData.NodeIP,
-					Type:        JobModel.TypeAddRule,
-					TaskDetails: RuleData,
-				},
-			)
+			var setting = sdb.GetSystemSetting()
+			state, err := setting.IsForceDisposed()
+			if state && err != nil {
+				dispurserDb.AddJob(
+					JobModel.Job{
+						NodeIP:      RuleData.NodeIP,
+						Type:        JobModel.TypeAddRule,
+						TaskDetails: RuleData,
+					},
+				)
+			}
+
 			resp.Code = http.StatusOK
 			resp.Message = "Data Base Updated"
 			resp.Data = nil
@@ -122,8 +122,11 @@ func RemoveRuleByRuleID(w http.ResponseWriter, r *http.Request) {
 					RuleID: RuleID,
 				},
 			}
-			// jobModel.IP =
 			dispurserDb.AddJob(jobModel)
+			err := rules.DispursedRule(RuleID)
+			if err != nil {
+				log.Println("ERROR: [RU]: ", err)
+			}
 		}
 		resp.Code = http.StatusOK
 		resp.Message = Message
