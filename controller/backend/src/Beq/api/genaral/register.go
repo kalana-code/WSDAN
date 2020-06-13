@@ -16,7 +16,8 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	if (*r).Method == "OPTIONS" {
 		return
 	}
-	var TempUser model.User
+	var TempUser model.UserInfo
+	TempUser.Role = "a"
 	reqBody, err := ioutil.ReadAll(r.Body)
 	// message on Response
 	resp := model.Response{}

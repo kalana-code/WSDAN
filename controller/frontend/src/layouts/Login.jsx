@@ -92,7 +92,7 @@ export default class LoginLayOut extends Component {
                     "Password":this.state.Password
                 }
             this.setState({isLoading:true})
-            axios.post(`http://localhost:8081/Student/Login`, Request_Body).then(response => {
+            axios.post(`http://localhost:8081/User/Login`, Request_Body).then(response => {
                 if(response.status === 200){
                     localStorage.setItem('Token', 
                         response.data.Data.token);
