@@ -52,7 +52,7 @@ func main() {
 	}
 	defer nfq.Close()
 	packets := nfq.GetPackets()
-	for true {
+	for{
 		select {
 		case p := <-packets:
 			packet := p.Packet

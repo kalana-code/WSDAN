@@ -3,7 +3,6 @@ package utils
 import (
 	"Beq/api/genaral/model"
 	"Beq/auth"
-	"Beq/utils"
 	"log"
 	"net/http"
 	"os"
@@ -15,30 +14,12 @@ import (
 )
 
 // import dataBase
-var db = utils.ConnectDataBase(5)
+var db = GetUserStore()
 
 // InsertUser function save user in db
-func InsertUser(User model.User) model.InnerResponse {
+func InsertUser(User model.UserInfo) model.InnerResponse {
 
-	// err := validate(User.Email)
-	// if err != nil {
-	// 	log.Println("ERROR: DB insert query preparation process failed.", err)
-	// 	return errorEmailValidation
-	// }
-
-	insForm, err := db.Prepare("INSERT INTO User(FirstName,LastName, Email,SecretKey,Gender,BirthDay) VALUES(?,?,?,?,?,?)")
-	// executing
-	if err != nil {
-		log.Println("ERROR: DB insert query preparation process failed.", err)
-		return errorDataBase
-	}
-	_, errIns := insForm.Exec(
-		User.FirstName,
-		User.LastName,
-		User.Email,
-		User.Password,
-		User.Gender,
-		User.BirthDay)
+	errIns := db.AddUser(User)
 
 	if errIns != nil {
 		log.Println("ERROR: DataBase Insert Query Excuting Process Failed. ", errIns)
@@ -48,34 +29,16 @@ func InsertUser(User model.User) model.InnerResponse {
 		return errorDataBase
 	}
 
-	defer insForm.Close()
 	log.Println("INFO: User has been inserted successfully.")
 	return stateCreated
 
 }
 
-// FindUser already exist in dataBase
+// FindUser used for find a user
 func FindUser(User model.UserLogin) model.InnerResponse {
 	userInfo := &model.UserInfo{}
 	resp := model.InnerResponse{}
-	err := db.QueryRow(
-		`SELECT 
-			FirstName, 
-			LastName, 
-			Email, 
-			SecretKey, 
-			BirthDay, 
-			Gender, 
-			Role
-		FROM User where Email = ? AND isActive=1`, User.Email).Scan(
-		&userInfo.FirstName,
-		&userInfo.LastName,
-		&userInfo.Email,
-		&userInfo.Password,
-		&userInfo.BirthDay,
-		&userInfo.Gender,
-		&userInfo.Role,
-	)
+	userInfo, err := db.FindUser(User.Email)
 	if err != nil {
 		log.Println("ERROR: Email address not found", err)
 		resp.Status = http.StatusForbidden
