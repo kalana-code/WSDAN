@@ -5,6 +5,7 @@ import "net/http"
 //RulesDataRow is used in DataBase
 type RulesDataRow struct {
 	FlowID    string
+	Protocol  string
 	NodeID    string
 	DstIP     string
 	Interface string
