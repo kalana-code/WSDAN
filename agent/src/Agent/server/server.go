@@ -12,6 +12,8 @@ import (
 var (
 	infoLog  string = "INFO: [SH]:"
 	errorLog string = "ERROR: [SH]:"
+	port     string = ":8082"
+	endPoint string = "/AddFlowRule"
 )
 
 //NodeDetails is used to store node data
@@ -38,8 +40,8 @@ type NodeData struct {
 func Server() {
 	log.Print(infoLog, "Starting Server")
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/AddNodeInfo", addNodeRule)
-	log.Println(http.ListenAndServe(":8081", router))
+	router.HandleFunc(endPoint, addNodeRule)
+	log.Println(http.ListenAndServe(port, router))
 }
 
 func addNodeRule(w http.ResponseWriter, r *http.Request) {
@@ -47,13 +49,17 @@ func addNodeRule(w http.ResponseWriter, r *http.Request) {
 	rule := flowmanager.ControllerRuleConfiguration{}
 	err := json.NewDecoder(r.Body).Decode(&rule)
 	if err != nil {
+		log.Println(errorLog, "Recieved Rule Error:", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+	} else {
+		log.Print(infoLog, "Rule is received successfully")
+		w.WriteHeader(http.StatusAccepted)
+		w.Write([]byte(http.StatusText(http.StatusAccepted) + ": Rule is received successfully"))
+		jsonData, jsonErr := json.Marshal(rule)
+		if jsonErr != nil {
+			log.Println(errorLog, "Recieved Rule JSON Error:", jsonErr)
+		}
+		log.Print(infoLog, "Recieved Rule:", string(jsonData))
+		flowmanager.RuleUpdater(rule)
 	}
-	jsonData, jsonErr := json.Marshal(rule)
-	if jsonErr != nil {
-		log.Println(errorLog, "Recieved Rule Error:", jsonErr)
-	}
-	log.Print(infoLog, "Recieved Rule:", jsonData)
-	flowmanager.RuleUpdater(rule)
 }
