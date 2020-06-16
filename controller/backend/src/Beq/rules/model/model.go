@@ -2,6 +2,16 @@ package model
 
 import "net/http"
 
+//ACTION used for define actions
+type ACTION string
+
+const (
+	//Accept used for accept a packet
+	Accept ACTION = "ACCEPT"
+	//Drop used for drop a packet
+	Drop = "DROP"
+)
+
 //RulesDataRow is used in DataBase
 type RulesDataRow struct {
 	FlowID    string
@@ -12,6 +22,7 @@ type RulesDataRow struct {
 	DstMAC    string
 	NodeIP    string
 	IsSet     bool
+	Action    ACTION
 }
 
 //Rule is used for add a rule for Node
@@ -23,6 +34,7 @@ type Rule struct {
 	Interface string `json:"Interface"`
 	DstMAC    string `json:"DstMAC"`
 	NodeIP    string `json:"NodeIP"`
+	Action    ACTION `json:"Action"`
 }
 
 //Populate populating the data
@@ -33,6 +45,7 @@ func (obj *Rule) Populate(RuleID string, data RulesDataRow) {
 	obj.FlowID = data.FlowID
 	obj.Interface = data.Interface
 	obj.NodeIP = data.NodeIP
+	obj.Action = data.Action
 }
 
 //StateRequest is used for request node state
