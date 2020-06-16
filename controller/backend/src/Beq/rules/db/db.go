@@ -33,7 +33,7 @@ func (obj *RuleDB) AddRule(User model.RulesDataRow) error {
 		ruleIndex++
 		return nil
 	}
-	return errors.New("No Data Base Initiate")
+	return errors.New("No Data Base Initiated")
 
 }
 

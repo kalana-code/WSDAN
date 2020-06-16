@@ -47,11 +47,16 @@ func (*db) GenarateNetworkTopology() (model.GrpData, error) {
 	nodeIndex := 0
 
 	for MAC, Index := range allNodes {
+		a := instance[MAC]
+		group := "AP"
+		if a.Node.IP == "" {
+			group = "NotAP"
+		}
 		nodes = append(nodes,
 			model.GrpNode{
 				ID:       Index,
 				Label:    "Node " + strconv.Itoa(Index),
-				Group:    "Agent",
+				Group:    group,
 				NodeData: instance[MAC],
 			})
 		nodeIndex++

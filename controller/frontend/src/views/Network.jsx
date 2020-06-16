@@ -32,6 +32,7 @@ events = {
       if(nodes[0] !== undefined){
         if(selectCount === 0){
           selectNode[selectCount] = this.getNodeData(nodes[0]);
+          console.log(this.getNodeData(nodes[0]))
           selectCount++
         }else{
             selectNode = Object.assign(this.state.selectNode);
@@ -104,6 +105,16 @@ options = {
             icon: {
               face: "FontAwesome",
               code: "\uf1eb",
+              size: 50,
+              color: "gray"
+            }
+          },
+          NotAP: {
+            shape: "icon",
+            color: "#FF9900", // orange
+            icon: {
+              face: "FontAwesome",
+              code: "\uf2da",
               size: 50,
               color: "gray"
             }
@@ -190,7 +201,7 @@ async componentDidMount() {
     try {
       setInterval(async () => {
         this.getData();
-      }, 3000);
+      }, 1000);
     } catch(e) {
       console.log(e);
     }
