@@ -6,12 +6,13 @@ import { Grid, Row, Col } from "react-bootstrap";
 import { Callout, } from "@blueprintjs/core";
 
 class Home extends React.Component {
+  
   render() {
     return (
       <div className="content">
-        <Grid fluid>
+        {/* <Grid fluid>
           <Row>
-            <Col lg="6" sm="12">
+            {/* <Col lg="6" sm="12">
               <Callout title="Note" icon="info-sign" intent="primary">
               Message About Project .
               </Callout>
@@ -31,9 +32,9 @@ class Home extends React.Component {
               <Callout title="Note" icon="info-sign" intent="success">
                 Message About Project
               </Callout>
-            </Col>
-          </Row>
-        </Grid>
+            </Col> */}
+          {/* </Row>
+        </Grid> */} 
       </div>
     );
   }

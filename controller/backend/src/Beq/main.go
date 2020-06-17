@@ -69,11 +69,7 @@ func requestDispurser(task *dispurserQueue.JobQueue) {
 
 	log.Println("INFO: [RD]: Request Dispurser Is Activeted")
 	for {
-
-		// fmt.Println("[R]-> Remove", task.List.Front().Value)
-		// task.List.Remove(task.List.Front())
 		task.Dispurse()
-
 	}
 
 }

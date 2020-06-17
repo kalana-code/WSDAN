@@ -72,7 +72,7 @@ type Node struct {
 // Neighbour struct
 type Neighbour struct {
 	MAC       string
-	Bandwidth int
+	Bandwidth string
 }
 
 // Response Used for exchange State
