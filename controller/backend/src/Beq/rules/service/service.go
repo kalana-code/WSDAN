@@ -7,6 +7,7 @@ import (
 	"Beq/rules/model"
 	sdb "Beq/settings/db"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -25,6 +26,7 @@ func AddRule(w http.ResponseWriter, r *http.Request) {
 	rulesDb := db.GetRuleStore()
 	var RuleData model.RulesDataRow
 	reqBody, err := ioutil.ReadAll(r.Body)
+
 	resp := model.Response{}
 	// set Default value
 	resp.Default()
@@ -44,7 +46,8 @@ func AddRule(w http.ResponseWriter, r *http.Request) {
 			rulesDb.AddRule(RuleData)
 			var setting = sdb.GetSystemSetting()
 			state, err := setting.IsForceDisposed()
-			if state && err != nil {
+			fmt.Println(state)
+			if state && err == nil {
 				dispurserDb.AddJob(
 					JobModel.Job{
 						NodeIP:      RuleData.NodeIP,

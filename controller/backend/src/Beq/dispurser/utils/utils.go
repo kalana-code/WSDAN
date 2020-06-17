@@ -6,12 +6,12 @@ import (
 	"Beq/dispurser/model"
 	"bytes"
 	"log"
-	"net"
 	"net/http"
 )
 
 //Dispurse used for dispurse jobs to Node
 func Dispurse(job *model.Job) {
+	log.Println("INFO: [RD]: Dispursing .... ")
 	switch job.Type {
 	case model.TypeAddRule:
 		// add rule
@@ -32,11 +32,11 @@ func Dispurse(job *model.Job) {
 
 func removeRule(job *model.Job) {
 	// figureout host IP
-	host := net.ParseIP(job.NodeIP)
-	if host == nil {
-		log.Println("ERROR: [RD]: [Remove Rule] IP convertion process was failed")
-		return
-	}
+	// host := net.ParseIP(job.NodeIP)
+	// if host == nil {
+	// 	log.Println("ERROR: [RD]: [Remove Rule] IP convertion process was failed")
+	// 	return
+	// }
 
 	//figureout remove rule model
 	data, ok := job.TaskDetails.(model.RemoveRuleJob)
@@ -44,29 +44,29 @@ func removeRule(job *model.Job) {
 		log.Println("ERROR: [RD]: [Remove Rule] Task details not match to RemoveRuleJob model")
 		return
 	}
-	httpClient(host, model.RemoveRuleEndPoint, data)
+	httpClient(job.NodeIP, model.RemoveRuleEndPoint, data)
 
 }
 
 func addRule(job *model.Job) {
 	// figureout host IP
-	host := net.ParseIP(job.NodeIP)
-	if host == nil {
-		log.Println("ERROR: [RD]: [Remove Rule] IP convertion process was failed")
-		return
-	}
+	// host := net.ParseIP(job.NodeIP)
+	// if host == nil {
+	// 	log.Println("ERROR: [RD]: [Remove Rule] IP convertion process was failed")
+	// 	return
+	// }
 
 	//figureout remove rule model
-	data, ok := job.TaskDetails.(model.AddRuleJob)
-	if !ok {
-		log.Println("ERROR: [RD]: [Remove Rule] Task details not match to AddRuleJob model")
-		return
-	}
-	httpClient(host, model.AddRuleEndPoint, data)
+	// data, ok := job.TaskDetails.(model.AddRuleJob)
+	// if !ok {
+	// 	log.Println("ERROR: [RD]: [Add Rule] Task details not match to AddRuleJob model")
+	// 	return
+	// }
+	httpClient(job.NodeIP, model.AddRuleEndPoint, job.TaskDetails)
 }
 
-func httpClient(host net.IP, endPoint string, data interface{}) {
-	url := host.String() + "/" + endPoint
+func httpClient(host string, endPoint string, data interface{}) {
+	url := host + ":" + model.Port + "/" + endPoint
 	jsonData, ok := data.([]byte)
 	if !ok {
 		log.Println("ERROR: [HC]: [HTTP Client] Request data convertion [to []byte ] process was failed")

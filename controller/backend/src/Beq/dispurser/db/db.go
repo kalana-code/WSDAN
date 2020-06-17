@@ -5,6 +5,7 @@ import (
 	"Beq/dispurser/utils"
 	"container/list"
 	"errors"
+	"log"
 	"sync"
 	"unsafe"
 )
@@ -32,6 +33,7 @@ func GetRequestQueue() *JobQueue {
 //AddJob  is used for add JOBs
 func (obj *JobQueue) AddJob(Job model.Job) error {
 	if instance.List != nil {
+		log.Println("INFO: [RD]: Add Job")
 		instance.List.PushBack(Job)
 		totalJobCount++
 		return nil

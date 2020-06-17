@@ -66,7 +66,7 @@ func (*db) GenarateNetworkTopology() (model.GrpData, error) {
 	for MAC, NadeData := range instance {
 		for _, Neighbour := range NadeData.Neighbours {
 			currentLink := model.GrpNodeLink{}
-			currentLink.SetLink(allNodes[MAC], allNodes[Neighbour.MAC], strconv.Itoa(Neighbour.Bandwidth)+" mbps")
+			currentLink.SetLink(allNodes[MAC], allNodes[Neighbour.MAC], Neighbour.Bandwidth)
 			nodeLinks = append(nodeLinks, currentLink)
 		}
 

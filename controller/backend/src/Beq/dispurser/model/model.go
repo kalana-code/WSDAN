@@ -15,6 +15,8 @@ const (
 )
 
 const (
+	//Port used to define Port of rule endpoint
+	Port = "8082"
 	//RemoveRuleEndPoint used to define remove rule endpoint
 	RemoveRuleEndPoint = "endpoint"
 	//AddRuleEndPoint used to define add rule endpoint
