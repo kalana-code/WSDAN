@@ -14,6 +14,13 @@ const (
 	TypeNodeState = 3
 )
 
+const (
+	//RemoveRuleEndPoint used to define remove rule endpoint
+	RemoveRuleEndPoint = "endpoint"
+	//AddRuleEndPoint used to define add rule endpoint
+	AddRuleEndPoint = "endpoint"
+)
+
 //Job is used for add Tesk for task queue
 type Job struct {
 	Type        JobType
