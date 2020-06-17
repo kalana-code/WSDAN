@@ -19,14 +19,17 @@ type ControllerRuleConfiguration struct {
 	FlowID    string `json:"FlowID"`
 	Interface string `json:"Interface"`
 	DstMAC    string `json:"DstMAC"`
+	Action    string `json:"Action"`
 }
 
 var (
 	defaultRule = database.RuleConfiguration{
-		DstIP:    "any",
-		Protocol: "any",
-		FlowID:   "default",
-		DstMAC:   "b8:27:eb:9a:5e:a5",
+		DstIP:     "any",
+		Protocol:  "any",
+		FlowID:    "default",
+		Interface: "wlan0",
+		DstMAC:    "b8:27:eb:9a:5e:a5",
+		Action:    "ACCEPT",
 	}
 	infoLog  string = "INFO: [FM]:"
 	errorLog string = "ERROR: [FM]:"
@@ -48,10 +51,12 @@ func RuleChecker(packetDetails PacketDetails) database.RuleConfiguration {
 func RuleUpdater(rule ControllerRuleConfiguration) {
 	log.Println(infoLog, "Invoke RuleUpdater")
 	newRuleConf := database.RuleConfiguration{
-		DstIP:    rule.DstIP,
-		Protocol: rule.Protocol,
-		FlowID:   rule.FlowID,
-		DstMAC:   rule.DstMAC,
+		DstIP:     rule.DstIP,
+		Protocol:  rule.Protocol,
+		FlowID:    rule.FlowID,
+		Interface: rule.Interface,
+		DstMAC:    rule.DstMAC,
+		Action:    rule.Action,
 	}
 	database.CreateRule(rule.RuleID, newRuleConf)
 	database.ViewRules()
