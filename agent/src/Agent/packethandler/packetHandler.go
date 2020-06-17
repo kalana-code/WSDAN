@@ -54,60 +54,66 @@ func PacketAnalyzer(packet gopacket.Packet) gopacket.SerializeBuffer {
 		dataPayload = applicationLayer.Payload()
 	}
 	ethernetLayer := generateEthernetLayer(packetDetails)
-	options := gopacket.SerializeOptions{
-		ComputeChecksums: true,
-		FixLengths:       true,
+	if ethernetLayer != nil {
+		options := gopacket.SerializeOptions{
+			ComputeChecksums: true,
+			FixLengths:       true,
+		}
+		buffer = gopacket.NewSerializeBuffer()
+		if udpLayer != nil {
+			log.Println(infoLog, "UDP packet processing.")
+			udpl.SetNetworkLayerForChecksum(ipl)
+			err = gopacket.SerializeLayers(buffer, options,
+				ethernetLayer,
+				ipl,
+				udpl,
+				gopacket.Payload(dataPayload),
+			)
+			if err != nil {
+				log.Println(errorLog, "UDP packet serilizing", err)
+			}
+		} else if icmpLayer != nil {
+			log.Println(infoLog, "ICMP packet processing.")
+			err = gopacket.SerializeLayers(buffer, options,
+				ethernetLayer,
+				ipl,
+				icmpl,
+				gopacket.Payload(dataPayload),
+			)
+			if err != nil {
+				log.Println(errorLog, "ICMP packet serilizing", err)
+			}
+		} else if tcpLayer != nil {
+			log.Println(infoLog, "TCP packet processing.")
+			tcpl.SetNetworkLayerForChecksum(ipl)
+			err = gopacket.SerializeLayers(buffer, options,
+				ethernetLayer,
+				ipl,
+				tcpl,
+				gopacket.Payload(dataPayload),
+			)
+			if err != nil {
+				log.Println(errorLog, "TCP packet serilizing", err)
+			}
+		}
+		return buffer
 	}
-	buffer = gopacket.NewSerializeBuffer()
-	if udpLayer != nil {
-		log.Println(infoLog, "UDP packet processing.")
-		udpl.SetNetworkLayerForChecksum(ipl)
-		err = gopacket.SerializeLayers(buffer, options,
-			ethernetLayer,
-			ipl,
-			udpl,
-			gopacket.Payload(dataPayload),
-		)
-		if err != nil {
-			log.Println(errorLog, "UDP packet serilizing", err)
-		}
-	} else if icmpLayer != nil {
-		log.Println(infoLog, "ICMP packet processing.")
-		err = gopacket.SerializeLayers(buffer, options,
-			ethernetLayer,
-			ipl,
-			icmpl,
-			gopacket.Payload(dataPayload),
-		)
-		if err != nil {
-			log.Println(errorLog, "ICMP packet serilizing", err)
-		}
-	} else if tcpLayer != nil {
-		log.Println(infoLog, "TCP packet processing.")
-		tcpl.SetNetworkLayerForChecksum(ipl)
-		err = gopacket.SerializeLayers(buffer, options,
-			ethernetLayer,
-			ipl,
-			tcpl,
-			gopacket.Payload(dataPayload),
-		)
-		if err != nil {
-			log.Println(errorLog, "TCP packet serilizing", err)
-		}
-	}
-	return buffer
+	return nil
 }
 
 func generateEthernetLayer(packetDetails flowmanager.PacketDetails) *layers.Ethernet {
 	log.Println(infoLog, "Generating Ethernet Layer")
 	ruleConfiguration := flowmanager.RuleChecker(packetDetails)
-	_, hardwareAddrs, _ := initializer.GetIPAndMAC()
-	srcMAC, _ := net.ParseMAC(hardwareAddrs)
-	dstMAC, _ := net.ParseMAC(ruleConfiguration.DstMAC)
-	ethernetLayer := &layers.Ethernet{
-		SrcMAC:       srcMAC,
-		DstMAC:       dstMAC,
-		EthernetType: layers.EthernetType(0x0800),
+	if ruleConfiguration.Action == "ACCEPT" {
+		_, hardwareAddrs, _ := initializer.GetIPAndMAC()
+		srcMAC, _ := net.ParseMAC(hardwareAddrs)
+		dstMAC, _ := net.ParseMAC(ruleConfiguration.DstMAC)
+		ethernetLayer := &layers.Ethernet{
+			SrcMAC:       srcMAC,
+			DstMAC:       dstMAC,
+			EthernetType: layers.EthernetType(0x0800),
+		}
+		return ethernetLayer
 	}
-	return ethernetLayer
+	return nil
 }
