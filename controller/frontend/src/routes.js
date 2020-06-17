@@ -1,7 +1,7 @@
 
 
 import Home from "views/Home.jsx";
-import Question from "views/Question.jsx";
+import RuleManager from "views/RuleManager.jsx";
 import Network from "views/Network.jsx";
 import Settings from "views/Settings.jsx";
 
@@ -21,10 +21,10 @@ export const adminRoute = [
     layout: "/admin"
    },
    {
-    path: "/icon",
+    path: "/ruleManager",
     name: "Rule Manager",
     icon: "pe-7s-photo-gallery",
-    component: Question,
+    component: RuleManager,
     layout: "/admin"
    },
    

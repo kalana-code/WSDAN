@@ -32,8 +32,8 @@ func Handlers() *mux.Router {
 
 	//System setting handling APIs
 	r.HandleFunc("/StateToggle", settingService.Toggle).Methods("GET", "OPTIONS")
+	r.HandleFunc("/StateToggleForceDispurser", settingService.ToggleForceDispurserMode).Methods("GET", "OPTIONS")
 	r.HandleFunc("/SystemSetting", settingService.GetCurrentSetting).Methods("GET", "OPTIONS")
-
 	// user registrarion
 	// r.HandleFunc("/Register/Student", genaral.Register).Methods("POST", "OPTIONS")
 	r.HandleFunc("/User/Login", genaral.Login).Methods("POST", "OPTIONS")
