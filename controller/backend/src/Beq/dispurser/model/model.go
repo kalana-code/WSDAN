@@ -41,4 +41,5 @@ type AddRuleJob struct {
 	DstIP     string `json:"DstIP"`
 	Interface string `json:"Interface"`
 	DstMAC    string `json:"DstMAC"`
+	Action    string `json:"DstMAC"`
 }

@@ -16,7 +16,6 @@ const (
 type RulesDataRow struct {
 	FlowID    string
 	Protocol  string
-	NodeID    string
 	DstIP     string
 	Interface string
 	DstMAC    string

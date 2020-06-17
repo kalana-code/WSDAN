@@ -25,7 +25,6 @@ func AddRule(w http.ResponseWriter, r *http.Request) {
 	rulesDb := db.GetRuleStore()
 	var RuleData model.RulesDataRow
 	reqBody, err := ioutil.ReadAll(r.Body)
-
 	resp := model.Response{}
 	// set Default value
 	resp.Default()

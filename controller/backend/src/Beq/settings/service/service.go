@@ -36,6 +36,33 @@ func Toggle(w http.ResponseWriter, r *http.Request) {
 
 }
 
+//ToggleForceDispurserMode  toggle system state
+func ToggleForceDispurserMode(w http.ResponseWriter, r *http.Request) {
+	if (*r).Method == "OPTIONS" {
+		return
+	}
+	log.Println("INFO: [ST]: Toggling Force Dispurser Mode Process is Initiated.")
+	setting := db.GetSystemSetting()
+	resp := model.Response{}
+	// set Default value
+	resp.Default()
+
+	err := setting.ToggleForceDispurserMode()
+
+	if err != nil {
+		log.Println("ERROR: [ST]: Toggle Process is Failed.", err)
+		resp.InternalServerError()
+		w.WriteHeader(http.StatusInternalServerError)
+	} else {
+		resp.Code = http.StatusOK
+		resp.Message = "Toggling Force Dispurser Mode is Toggled Successfully."
+		w.WriteHeader(http.StatusOK)
+		log.Println("INFO: [ST]: Toggling Force Dispurser Mode is Toggled Successfully.")
+	}
+	json.NewEncoder(w).Encode(resp)
+
+}
+
 //GetCurrentSetting  used for get current setting of system
 func GetCurrentSetting(w http.ResponseWriter, r *http.Request) {
 	if (*r).Method == "OPTIONS" {
