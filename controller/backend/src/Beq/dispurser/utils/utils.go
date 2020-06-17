@@ -66,6 +66,7 @@ func addRule(job *model.Job) {
 }
 
 func httpClient(host string, endPoint string, data interface{}) {
+
 	url := host + ":" + model.Port + "/" + endPoint
 	jsonData, ok := data.([]byte)
 	if !ok {

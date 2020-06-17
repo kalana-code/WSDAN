@@ -64,7 +64,6 @@ func AddRule(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	json.NewEncoder(w).Encode(resp)
-
 }
 
 // GetAllRules for get all rules in controller
