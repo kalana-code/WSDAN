@@ -2,7 +2,6 @@
 
 import axios from "axios";
 import React, { Component } from "react";
-import InputMask from "react-input-mask";
 import {
   Drawer,
   Classes,
@@ -10,8 +9,10 @@ import {
   InputGroup,
   Button,
   Callout,
-  H1,
+
 } from "@blueprintjs/core";
+
+import config from './../../config/config'
 class RuleInsertForm extends Component {
   state = {
     destinationMac: [],
@@ -147,7 +148,7 @@ class RuleInsertForm extends Component {
         Action: this.state.Action, 
       };
       this.setState({ isLoading: true });
-      axios.post(`http://localhost:8081/AddRule`, Request_Body).then(
+      axios.post(`http://`+config.host+`:8081/AddRule`, Request_Body).then(
         (response) => {
           if (response.status === 200) {
             this.setState({ isLoading: false });

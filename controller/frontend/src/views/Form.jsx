@@ -1,5 +1,6 @@
 import React from "react";
 import axios from "axios";
+import config from "./../config/config"
 
 export default class Form extends React.Component {
   constructor(props) {
@@ -21,7 +22,7 @@ export default class Form extends React.Component {
   handleSubmit(event) {
     alert("A name was submitted: " + this.state.name);
     event.preventDefault();
-    axios.post(`http://localhost:8080/addStudent`, this.state).then(res => {
+    axios.post(`http://`+config.host+`:8080/addStudent`, this.state).then(res => {
       console.log(res);
       console.log(res.data);
     });

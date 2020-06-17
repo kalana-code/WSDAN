@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import "./style/style.css"
+import config from "./../config/config"
 
 class Forward extends Component {
     state = { IsLoading:true }
@@ -11,10 +12,10 @@ class Forward extends Component {
         }
         // const config = {
         //     method: "get",
-        //     url: "https://localhost:8081/auth/verify",
+        //     url: "https://`+config.host+`:8081/auth/verify",
         //     headers: { }
         // }
-        axios.get("http://localhost:8081/auth/verify", {
+        axios.get(`http://`+config.host+`:8081/auth/verify`, {
    
         headers: {
             'x-access-token':localStorage.getItem('Token')
