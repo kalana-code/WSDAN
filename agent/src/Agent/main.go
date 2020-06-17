@@ -52,7 +52,7 @@ func main() {
 	}
 	defer nfq.Close()
 	packets := nfq.GetPackets()
-	for{
+	for {
 		select {
 		case p := <-packets:
 			packet := p.Packet
@@ -62,12 +62,16 @@ func main() {
 			}
 			defer handle.Close()
 			buffer = packethandler.PacketAnalyzer(packet)
-			fmt.Println(gopacket.NewPacket(buffer.Bytes(), layers.LayerTypeEthernet, gopacket.Default))
 			p.SetVerdict(netfilter.NF_DROP)
-			log.Println(infoLog, "Packet Sending")
-			err = handle.WritePacketData(buffer.Bytes())
-			if err != nil {
-				log.Println(errorLog, "Packet Writing Error:", err)
+			if buffer != nil {
+				fmt.Println(gopacket.NewPacket(buffer.Bytes(), layers.LayerTypeEthernet, gopacket.Default))
+				log.Println(infoLog, "Packet Sending")
+				err = handle.WritePacketData(buffer.Bytes())
+				if err != nil {
+					log.Println(errorLog, "Packet Writing Error:", err)
+				}
+			} else {
+				log.Println(infoLog, "Packet is Dropped")
 			}
 		}
 	}

@@ -15,10 +15,12 @@ var (
 
 // RuleConfiguration is used to store data in the node database
 type RuleConfiguration struct {
-	DstIP    string `json:"DstIP"`
-	Protocol string `json:"Protocol"`
-	FlowID   string `json:"FlowID"`
-	DstMAC   string `json:"DstMAC"`
+	DstIP     string `json:"DstIP"`
+	Protocol  string `json:"Protocol"`
+	FlowID    string `json:"FlowID"`
+	Interface string `json:"Interface"`
+	DstMAC    string `json:"DstMAC"`
+	Action    string `json:"Action"`
 }
 
 // GetDatabase is used to get one instance of the db

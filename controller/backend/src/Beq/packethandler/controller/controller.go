@@ -48,19 +48,22 @@ func packetController() {
 			buffer, rule = service.PacketAnalyzer(packet)
 			fmt.Println(gopacket.NewPacket(buffer.Bytes(), layers.LayerTypeEthernet, gopacket.Default))
 			p.SetVerdict(netfilter.NF_DROP)
-			if buffer != nil {
-				if rule.IsSet {
-					log.Println(infoLog, "Rule is already set in Nodes")
-					}else{
-						log.Println(infoLog, "send the rule and set setRule=true")
-					}
+			if buffer != nil && rule != nil  {
 				log.Println(infoLog, "Packet Sending")
 				err = handle.WritePacketData(buffer.Bytes())
 				if err != nil {
 					log.Println(errorLog, "Packet Writing Error:", err)
 				}
 			}else{
-				log.Println(infoLog, "Packet Dropped")
+				log.Println(infoLog, "Packet is Dropped")				
+			}
+			if rule != nil{
+				if rule.IsSet{
+					log.Println(infoLog, "Rule is already set")
+				}else{
+					log.Println(infoLog, "Have to implement rule dispurser")	
+					service.DispurseFlow(rule.FlowID)
+				}
 			}
 		}
 	}

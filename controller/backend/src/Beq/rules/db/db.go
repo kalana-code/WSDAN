@@ -71,6 +71,22 @@ func (*RuleDB) FindRuleByDstIPAndProtocol(packetDetails packethandlerModel.Packe
 	return nil, errors.New("No Data Base Initiate")
 }
 
+//FindRulesByFlowID used to get rules by flow Id
+func (*RuleDB) FindRulesByFlowID(flowIDVal string) (*[]model.Rule, error) {
+	rules := []model.Rule{}
+	if instance != nil {
+		for RuleID, RuleData := range instance {
+			if RuleData.FlowID == flowIDVal {
+				temp := model.Rule{}
+				temp.Populate(RuleID, RuleData)
+				rules = append(rules, temp)
+			}
+		}
+		return &rules, nil
+	}
+	return nil, errors.New("No Data Base Initiate")
+}
+
 //RemoveRuleByRuleID used for remove Rule by RuleID
 func (*RuleDB) RemoveRuleByRuleID(RuleID string) (string, *string, error) {
 	if instance != nil {
@@ -142,22 +158,4 @@ func (*RuleDB) DispursedRule(RuleID string) error {
 		return errors.New("Not Exist Any Rule For Given RuleID")
 	}
 	return errors.New("No Data Base Initiate")
-}
-
-//FindRuleByFlowID used for get Rule bu RuleID
-func (*RuleDB) FindRuleByFlowID(FlowID string) (*[]model.RulesDataRow, error) {
-	if instance != nil {
-		rules := []model.RulesDataRow{}
-		for _, RuleData := range instance {
-			if RuleData.FlowID == FlowID {
-				rules = append(rules, RuleData)
-			}
-		}
-		if len(rules) == 0 {
-			return nil, errors.New("User NOT FOUND! ")
-		}
-		return &rules, nil
-
-	}
-	return nil, errors.New("No Data Base Initiate")
 }

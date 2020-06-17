@@ -1,6 +1,8 @@
 package service
 
 import (
+	dispurseDB "Beq/dispurser/db"
+	dispurseModel "Beq/dispurser/model"
 	"Beq/packethandler/model"
 	"Beq/packethandler/utils"
 	ruleDB "Beq/rules/db"
@@ -20,8 +22,8 @@ var (
 	dataPayload []byte         = nil
 	buffer      gopacket.SerializeBuffer
 	err         error
-	infoLog     string = "INFO: [PH]:"
-	errorLog    string = "ERROR: [PH]:"
+	infoLog     string = "INFO: [PS]:"
+	errorLog    string = "ERROR: [PS]:"
 )
 
 // PacketAnalyzer is used to anaylize an input packet and create a new output packet
@@ -56,51 +58,54 @@ func PacketAnalyzer(packet gopacket.Packet) (gopacket.SerializeBuffer, *ruleMode
 		dataPayload = applicationLayer.Payload()
 	}
 	ethernetLayer, rule := generateEthernetLayer(packetDetails)
-	if ethernetLayer != nil {
+	if ethernetLayer == nil {
 		return nil, nil
 	}
-	options := gopacket.SerializeOptions{
-		ComputeChecksums: true,
-		FixLengths:       true,
+	if rule.Action == "ACCEPT" {
+		options := gopacket.SerializeOptions{
+			ComputeChecksums: true,
+			FixLengths:       true,
+		}
+		buffer = gopacket.NewSerializeBuffer()
+		if udpLayer != nil {
+			log.Println(infoLog, "UDP packet processing.")
+			udpl.SetNetworkLayerForChecksum(ipl)
+			err = gopacket.SerializeLayers(buffer, options,
+				ethernetLayer,
+				ipl,
+				udpl,
+				gopacket.Payload(dataPayload),
+			)
+			if err != nil {
+				log.Println(errorLog, "UDP packet serilizing", err)
+			}
+		} else if icmpLayer != nil {
+			log.Println(infoLog, "ICMP packet processing.")
+			err = gopacket.SerializeLayers(buffer, options,
+				ethernetLayer,
+				ipl,
+				icmpl,
+				gopacket.Payload(dataPayload),
+			)
+			if err != nil {
+				log.Println(errorLog, "ICMP packet serilizing", err)
+			}
+		} else if tcpLayer != nil {
+			log.Println(infoLog, "TCP packet processing.")
+			tcpl.SetNetworkLayerForChecksum(ipl)
+			err = gopacket.SerializeLayers(buffer, options,
+				ethernetLayer,
+				ipl,
+				tcpl,
+				gopacket.Payload(dataPayload),
+			)
+			if err != nil {
+				log.Println(errorLog, "TCP packet serilizing", err)
+			}
+		}
+		return buffer, rule
 	}
-	buffer = gopacket.NewSerializeBuffer()
-	if udpLayer != nil {
-		log.Println(infoLog, "UDP packet processing.")
-		udpl.SetNetworkLayerForChecksum(ipl)
-		err = gopacket.SerializeLayers(buffer, options,
-			ethernetLayer,
-			ipl,
-			udpl,
-			gopacket.Payload(dataPayload),
-		)
-		if err != nil {
-			log.Println(errorLog, "UDP packet serilizing", err)
-		}
-	} else if icmpLayer != nil {
-		log.Println(infoLog, "ICMP packet processing.")
-		err = gopacket.SerializeLayers(buffer, options,
-			ethernetLayer,
-			ipl,
-			icmpl,
-			gopacket.Payload(dataPayload),
-		)
-		if err != nil {
-			log.Println(errorLog, "ICMP packet serilizing", err)
-		}
-	} else if tcpLayer != nil {
-		log.Println(infoLog, "TCP packet processing.")
-		tcpl.SetNetworkLayerForChecksum(ipl)
-		err = gopacket.SerializeLayers(buffer, options,
-			ethernetLayer,
-			ipl,
-			tcpl,
-			gopacket.Payload(dataPayload),
-		)
-		if err != nil {
-			log.Println(errorLog, "TCP packet serilizing", err)
-		}
-	}
-	return buffer, rule
+	return nil, rule
 }
 
 func generateEthernetLayer(packetDetails model.PacketDetails) (*layers.Ethernet, *ruleModel.RulesDataRow) {
@@ -123,4 +128,32 @@ func generateEthernetLayer(packetDetails model.PacketDetails) (*layers.Ethernet,
 		return ethernetLayer, ruleConfiguration
 	}
 	return nil, nil
+}
+
+// DispurseFlow is used to dispurse rules to all other nodes
+func DispurseFlow(flowID string) {
+	log.Println(infoLog, "Dispurse rules corresponding to a flow")
+	rulesDb := ruleDB.GetRuleStore()
+	requestQueue := dispurseDB.GetRequestQueue()
+	flowArray, err := rulesDb.FindRulesByFlowID(flowID)
+	if err != nil {
+		log.Println(errorLog, "DB data retrieving error", err)
+	}
+	for _, flow := range *flowArray {
+		taskDetails := dispurseModel.AddRuleJob{
+			RuleID:    flow.RuleID,
+			Protocol:  flow.Protocol,
+			FlowID:    flow.FlowID,
+			DstIP:     flow.DstIP,
+			Interface: flow.Interface,
+			DstMAC:    flow.DstMAC,
+		}
+		dispureFlow := dispurseModel.Job{
+			Type:        dispurseModel.TypeAddRule,
+			NodeIP:      flow.NodeIP,
+			TaskDetails: taskDetails,
+		}
+		requestQueue.AddJob(dispureFlow)
+		rulesDb.DispursedRule(flow.RuleID)
+	}
 }
