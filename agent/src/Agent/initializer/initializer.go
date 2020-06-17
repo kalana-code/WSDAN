@@ -65,17 +65,17 @@ func iptableRuleFlusher() error {
 func iptableInputHandler() error {
 	log.Println(infoLog, "Inserting iptable INPUT rules")
 	ip, _, _ := GetIPAndMAC()
-	err := exec.Command("sudo", "iptables", "-A", "INPUT", "1", "-p", "tcp", "--dport", "22", "-j", "ACCEPT").Run()
+	err := exec.Command("sudo", "iptables", "-I", "INPUT", "1", "-p", "tcp", "--dport", "22", "-j", "ACCEPT").Run()
 	if err != nil {
 		log.Println(errorLog, "Error when inserting INPUT rule: ssh")
 		return err
 	}
-	err = exec.Command("sudo", "iptables", "-A", "INPUT", "2", "-d", ip, "-j", "ACCEPT").Run()
+	err = exec.Command("sudo", "iptables", "-I", "INPUT", "2", "-d", ip, "-j", "ACCEPT").Run()
 	if err != nil {
 		log.Println(errorLog, "Error when inserting INPUT rule: allow packet with dst ip as node ip")
 		return err
 	}
-	return exec.Command("sudo", "iptables", "-A", "INPUT", "3", "-i", "wlan0", "-j", "NFQUEUE", "--queue-num", "0").Run()
+	return exec.Command("sudo", "iptables", "-I", "INPUT", "3", "-i", "wlan0", "-j", "NFQUEUE", "--queue-num", "0").Run()
 }
 
 // iptableOutputHandler is used to insert iptable OUTPUT rules
@@ -91,5 +91,5 @@ func iptableOutputHandler() error {
 		log.Println(errorLog, "Error when inserting OUTPUT rule: allow packet with dst ip as controller ip")
 		return err
 	}
-	return exec.Command("sudo", "iptables", "-A", "OUTPUT", "-j", "wlan0", "-j", "NFQUEUE", "--queue-num", "0").Run()
+	return exec.Command("sudo", "iptables", "-A", "OUTPUT", "-j", "NFQUEUE", "--queue-num", "0").Run()
 }
