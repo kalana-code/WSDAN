@@ -2,6 +2,7 @@
 import React, { Component } from "react";
 import Graph from "vis-react";
 import axios from "axios"
+import { ButtonGroup, Button } from "@blueprintjs/core";
  
 // import "./styles.css";
 // need to import the vis network css in order to show tooltip
@@ -9,6 +10,7 @@ import "./style/network/css/network-manipulation.css";
 
 import { Grid } from "react-bootstrap";
 import NodeStat from "components/NodeStat/NodeStat.jsx";
+import config from "./../config/config"
 
 class Network extends Component {
 state ={
@@ -174,7 +176,7 @@ options = {
 };
 
 getData=()=>{
-    axios.get(`http://localhost:8081/GetNodeInfo`).then(response => {
+    axios.get(`http://`+config.host+`:8081/GetNodeInfo`).then(response => {
       if(response.status === 200){
         if(response.data.Data.graphData.nodes.length>0){
           this.setState({graph:response.data.Data.graphData});
@@ -198,13 +200,13 @@ getNodes = data => {
 };
 
 async componentDidMount() {
-    try {
-      setInterval(async () => {
+    // try {
+    //   setInterval(async () => {
         this.getData();
-      }, 1000);
-    } catch(e) {
-      console.log(e);
-    }
+    //   }, 1000);
+    // } catch(e) {
+    //   console.log(e);
+    // }
 };
 
 // we have  clear time interval 
@@ -232,7 +234,11 @@ getNodeData=(NodeID)=>{
   render() {
     return (
       <div className="content">
+
         <Grid fluid>
+        <ButtonGroup minimal={true}>
+            <Button icon="refresh" onClick={this.getData}>refresh</Button>
+          </ButtonGroup>
           <p>{this.setState.noNode ? "Not identified any node": "" }</p>
           <Graph
             graph={this.state.graph}

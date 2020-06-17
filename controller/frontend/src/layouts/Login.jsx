@@ -3,6 +3,7 @@ import "./style/login.css";
 import {FormGroup,InputGroup,Button,Checkbox,Intent,Tooltip} from '@blueprintjs/core';
 import axios from "axios";
 import auth from "./../auth/auth"
+import config from "./../config/config"
 
 export default class LoginLayOut extends Component {
     
@@ -92,7 +93,7 @@ export default class LoginLayOut extends Component {
                     "Password":this.state.Password
                 }
             this.setState({isLoading:true})
-            axios.post(`http://localhost:8081/User/Login`, Request_Body).then(response => {
+            axios.post(`http://`+config.host+`:8081/User/Login`, Request_Body).then(response => {
                 if(response.status === 200){
                     localStorage.setItem('Token', 
                         response.data.Data.token);

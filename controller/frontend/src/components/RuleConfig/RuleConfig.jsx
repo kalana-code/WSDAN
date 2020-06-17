@@ -4,30 +4,30 @@ import React, { Component } from "react";
 import {
   H3,
   // H4,
+  Divider,
   Tab,
   Tabs,
-  Drawer,
+  Icon,
   ButtonGroup,
   Button,
-  Classes,
 } from "@blueprintjs/core";
 import "./style.css";
 // import Trend from "react-trend";
-import RuleInsertForm from "./RuleInsertForm"
+import RuleInsertForm from "./RuleInsertForm";
 
 class RuleConfig extends Component {
   constructor(props) {
     super(props);
-    this.state = { 
+    this.state = {
       navbarTabId: "rs",
-      isOpen:false
-   };
+      isOpen: false,
+    };
   }
 
   handleNavbarTabChange = (navbarTabId) => this.setState({ navbarTabId });
 
-  handleOpenRuleInsertForm = () => this.setState({ isOpen:!this.state.isOpen });
-
+  handleOpenRuleInsertForm = () =>
+    this.setState({ isOpen: !this.state.isOpen });
 
   render() {
     console.log(this.props);
@@ -37,7 +37,17 @@ class RuleConfig extends Component {
         onChange={this.handleNavbarTabChange}
         selectedTabId={this.state.navbarTabId}
       >
-        <Tab id="rs" title="Rules" panel={<RulesPanel {...this.props} {...this.state} toggleDrawer={this.handleOpenRuleInsertForm}/>}/>
+        <Tab
+          id="rs"
+          title="Rules"
+          panel={
+            <RulesPanel
+              {...this.props}
+              {...this.state}
+              toggleDrawer={this.handleOpenRuleInsertForm}
+            />
+          }
+        />
         <Tab id="cn" disabled title="Configuration" panel={<ConfigPanel />} />
       </Tabs>
     );
@@ -49,20 +59,51 @@ const RulesPanel = (props) => (
   <div>
     <div>
       <ButtonGroup minimal={true}>
-        <Button disabled={props.SelectedNodes.length<1} icon="add" onClick={props.toggleDrawer}>add rule</Button>
+        <Button
+          disabled={props.SelectedNodes.length < 1}
+          icon="add"
+          onClick={props.toggleDrawer}
+        >
+          add rule
+        </Button>
         <Button icon="database">get rules</Button>
         <Button icon="trash">delete</Button>
       </ButtonGroup>
       {props.SelectedNodes.length > 0 ? (
-        <p className="bp3-text-muted bp3-text-small">Help Note</p>
+        <table className="bp3-text-muted">
+          <tr>
+            <td>
+              <p className="bp3-text-small"># Rule 00123</p>
+            </td>
+
+            <td className="pull-right10">
+              <p className="bp3-text-small">
+                <Icon icon={"dot"} iconSize={17} intent="success" />
+                <b>Active</b>
+              </p>
+            </td>
+            <td className="pull-right10">
+              <ButtonGroup minimal={true} small={true}>
+                <Button icon="cube-add" />
+                <Divider />
+                <Button icon="cube-remove" />
+                <Divider />
+                <Button icon="swap-horizontal" />
+              </ButtonGroup>
+            </td>
+          </tr>
+        </table>
       ) : (
         <p className="bp3-text-muted bp3-text-small">Please select a Node</p>
       )}
     </div>
-    <RuleInsertForm {...props} isOpen={props.isOpen} toggleDrawer={props.toggleDrawer}/>
+    <RuleInsertForm
+      {...props}
+      isOpen={props.isOpen}
+      toggleDrawer={props.toggleDrawer}
+    />
   </div>
 );
-
 
 const ConfigPanel = () => (
   <div>

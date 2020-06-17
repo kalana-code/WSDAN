@@ -7,6 +7,7 @@ import React, { Component } from "react";
 import { Card, H5, FormGroup, Switch } from "@blueprintjs/core";
 
 import { Grid, Row, Col } from "react-bootstrap";
+import config from "./../config/config"
 
 class Settings extends Component {
   state = {
@@ -20,7 +21,7 @@ class Settings extends Component {
     this.setState({
       automationLoad: true,
     });
-    axios.get("http://localhost:8081/StateToggle").then((res) => {
+    axios.get(`http://`+config.host+`:8081/StateToggle`).then((res) => {
       if (res.status === 200) {
         this.setState({
           automation: !this.state.automation,
@@ -36,7 +37,7 @@ class Settings extends Component {
     this.setState({
       dispurserLoad: true,
     });
-    axios.get("http://localhost:8081/StateToggleForceDispurser").then((res) => {
+    axios.get(`http://`+config.host+`:8081/StateToggleForceDispurser`).then((res) => {
       if (res.status === 200) {
         this.setState({
           dispurserMode: !this.state.dispurserMode,
