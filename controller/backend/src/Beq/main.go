@@ -4,15 +4,14 @@ import (
 	"Beq/api/genaral/model"
 	"Beq/api/genaral/utils"
 	dispurserQueue "Beq/dispurser/db"
+	packethandler "Beq/packethandler/controller"
 	routes "Beq/routes"
-	"container/list"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"sync"
-	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -50,19 +49,9 @@ func server() {
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
-func packetHandler(task *list.List) {
+func packetHandler() {
 	log.Println("INFO: [PH]: Packet Handler is Activeted")
-	index := 0
-	for {
-		uptimeTicker := time.NewTicker(10000 * time.Millisecond)
-		select {
-		case <-uptimeTicker.C:
-			// fmt.Println("[PH]-> add")
-			task.PushBack(index)
-			index++
-		}
-	}
-
+	packethandler.PacketController()
 }
 
 func requestDispurser(task *dispurserQueue.JobQueue) {
