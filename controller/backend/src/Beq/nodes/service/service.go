@@ -35,7 +35,7 @@ func AddNodeInfo(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 		} else {
 			neighbourMap.AddNode(NodeData.Node.MAC, NodeData)
-			fmt.Println(neighbourMap)
+			fmt.Println(NodeData.Node.IP)
 			resp.Code = http.StatusOK
 			resp.Message = "Data Base Updated"
 			resp.Data = nil

@@ -65,9 +65,9 @@ func (*RuleDB) FindRuleByDstIPAndProtocol(packetDetails packethandlerModel.Packe
 		for _, rule := range instance {
 			if rule.DstIP == packetDetails.DstIP && rule.Protocol == packetDetails.Protocol {
 				return &rule, nil
-			}
-			return nil, nil
+			}	
 		}
+		return nil, nil
 	}
 	return nil, errors.New("No Data Base Initiate")
 }

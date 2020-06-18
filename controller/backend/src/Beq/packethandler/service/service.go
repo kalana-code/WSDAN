@@ -36,6 +36,7 @@ func PacketAnalyzer(packet gopacket.Packet) (gopacket.SerializeBuffer, *ruleMode
 		ipl, _ = ipLayer.(*layers.IPv4)
 		packetDetails.DstIP = ipl.DstIP.String()
 		packetDetails.Protocol = ipl.Protocol.String()
+		log.Println(infoLog, "DstIP : ",packetDetails.DstIP, " SrcIP : ",ipl.SrcIP.String())
 	}
 	udpLayer := packet.Layer(layers.LayerTypeUDP)
 	if udpLayer != nil {
