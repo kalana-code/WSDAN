@@ -27,10 +27,8 @@ func GetSystemSetting() *SettingDB {
 func (*SettingDB) GetSetting() (*map[string]interface{}, error) {
 	if &instance != nil {
 		setting := make(map[string]interface{})
-		if setting["Mode"] = "MANUAL"; instance.Automation {
-			setting["Mode"] = "AUTO"
-		}
-
+		setting["Automation"] = instance.Automation
+		setting["ForceDispursed"] = instance.ForceDispurse
 		return &setting, nil
 	}
 	return nil, errors.New("No Data Base Initiate")

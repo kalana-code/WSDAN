@@ -48,6 +48,17 @@ class Settings extends Component {
       dispurserLoad: false,
     });
   }
+  componentDidMount=()=>{
+    axios.get(`http://`+config.host+`:8081/SystemSetting`).then((res) => {
+      if (res.status === 200) {
+        console.log(res.data.Data)
+        this.setState({
+          automation: res.data.Data.Automation,
+          dispurserMode:res.data.Data.ForceDispursed
+        });
+      }
+    });
+  }
 
   
   render() {
