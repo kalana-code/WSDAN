@@ -251,11 +251,11 @@ class RuleInsertForm extends Component {
                       intent={this.getIntent("Protocol")}
                     >
                     <option value="">--select protocol--</option>
-                      <option value="icmp">ICMP Protocol</option>
-                      <option value="http">
-                        HTTP Protocol
+                      <option value="ICMPv4">ICMP Protocol</option>
+                      <option value="UDP">
+                        UDP Protocol
                       </option>
-                      <option value="udp">UPD Protocol</option>
+                      {/* <option value="">UPD Protocol</option> */}
                     </select>
                   </div>
                 </FormGroup>
