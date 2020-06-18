@@ -67,7 +67,7 @@ func main() {
 	log.Println("INFO: [CO]: Controller -- ")
 	queue := dispurserQueue.GetRequestQueue()
 	go server()
-	// go packetHandler()
+	go packetHandler()
 	go requestDispurser(queue)
 	exit()
 }
