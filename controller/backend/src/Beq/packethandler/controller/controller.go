@@ -20,7 +20,7 @@ var (
 	snapshotLen int32  = 1024
 	promiscuous bool   = false
 	err         error
-	rule		*rulesModel.RulesDataRow
+	rule        *rulesModel.RulesDataRow
 	handle      *pcap.Handle
 	timeout     time.Duration = 1 * time.Second
 	buffer      gopacket.SerializeBuffer
@@ -30,7 +30,7 @@ var (
 
 // PacketController is used to handle all the functions related to an incomming packet
 func PacketController() {
-	err=packethandlerUtil.IptableInitializer() 
+	err = packethandlerUtil.IptableInitializer()
 	if err != nil {
 		log.Println(errorLog, "Error when initializing iptables")
 	}
@@ -53,24 +53,23 @@ func PacketController() {
 			buffer, rule = service.PacketAnalyzer(packet)
 			fmt.Println(gopacket.NewPacket(buffer.Bytes(), layers.LayerTypeEthernet, gopacket.Default))
 			p.SetVerdict(netfilter.NF_DROP)
-			if buffer != nil && rule != nil  {
+			if buffer != nil && rule != nil {
 				log.Println(infoLog, "Packet Sending")
 				err = handle.WritePacketData(buffer.Bytes())
 				if err != nil {
 					log.Println(errorLog, "Packet Writing Error:", err)
 				}
-			}else{
-				log.Println(infoLog, "Packet is Dropped")				
+			} else {
+				log.Println(infoLog, "Packet is Dropped")
 			}
-			if rule != nil{
-				if rule.IsSet{
+			if rule != nil {
+				if rule.IsSet {
 					log.Println(infoLog, "Rule is already set")
-				}else{
-					log.Println(infoLog, "Have to implement rule dispurser")	
+				} else {
+					log.Println(infoLog, "Have to implement rule dispurser")
 					service.DispurseFlow(rule.FlowID)
 				}
 			}
 		}
 	}
-}
 }
