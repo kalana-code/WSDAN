@@ -3,14 +3,14 @@ package model
 import "net/http"
 
 //ACTION used for define actions
-type ACTION string
+// type ACTION string
 
-const (
-	//Accept used for accept a packet
-	Accept ACTION = "ACCEPT"
-	//Drop used for drop a packet
-	Drop = "DROP"
-)
+// const (
+// 	//Accept used for accept a packet
+// 	Accept ACTION = "ACCEPT"
+// 	//Drop used for drop a packet
+// 	Drop = "DROP"
+// )
 
 //RulesDataRow is used in DataBase
 type RulesDataRow struct {
@@ -21,7 +21,7 @@ type RulesDataRow struct {
 	DstMAC    string
 	NodeIP    string
 	IsSet     bool
-	Action    ACTION
+	Action    string
 }
 
 //Rule is used for add a rule for Node
@@ -33,7 +33,7 @@ type Rule struct {
 	Interface string `json:"Interface"`
 	DstMAC    string `json:"DstMAC"`
 	NodeIP    string `json:"NodeIP"`
-	Action    ACTION `json:"Action"`
+	Action    string `json:"Action"`
 }
 
 //Populate populating the data

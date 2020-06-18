@@ -28,13 +28,14 @@ func GetRuleStore() *RuleDB {
 }
 
 //AddRule add user to data base
-func (obj *RuleDB) AddRule(User model.RulesDataRow) error {
+func (obj *RuleDB) AddRule(User model.RulesDataRow) (string, error) {
 	if instance != nil {
-		instance[obj.getRuleID()] = User
+		ruleID := obj.getRuleID()
+		instance[ruleID] = User
 		ruleIndex++
-		return nil
+		return ruleID, nil
 	}
-	return errors.New("No Data Base Initiated")
+	return "", errors.New("No Data Base Initiated")
 
 }
 

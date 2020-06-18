@@ -7,7 +7,6 @@ import (
 	"Beq/rules/model"
 	sdb "Beq/settings/db"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -43,28 +42,39 @@ func AddRule(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 		} else {
 			log.Println("INFO: [RU]: Added Rule Successfully")
-			rulesDb.AddRule(RuleData)
-			var setting = sdb.GetSystemSetting()
-			state, err := setting.IsForceDisposed()
-			fmt.Println(state)
-			if state && err == nil {
-				dispurserDb.AddJob(
-					JobModel.Job{
-						NodeIP:      RuleData.NodeIP,
-						Type:        JobModel.TypeAddRule,
-						TaskDetails: RuleData,
-					},
-				)
-			}
+			ruleID, err := rulesDb.AddRule(RuleData)
+			if err != nil {
+				resp.InternalServerError()
+				w.WriteHeader(http.StatusInternalServerError)
+			} else {
+				var setting = sdb.GetSystemSetting()
+				state, err := setting.IsForceDisposed()
+				if state && err == nil {
+					dispurserDb.AddJob(
+						JobModel.Job{
+							NodeIP: RuleData.NodeIP,
+							Type:   JobModel.TypeAddRule,
+							TaskDetails: JobModel.AddRuleJob{
+								RuleID:    ruleID,
+								Protocol:  RuleData.Protocol,
+								FlowID:    RuleData.FlowID,
+								DstIP:     RuleData.DstIP,
+								Interface: RuleData.Interface,
+								DstMAC:    RuleData.DstMAC,
+								Action:    RuleData.Action,
+							},
+						},
+					)
+				}
 
-			resp.Code = http.StatusOK
-			resp.Message = "Data Base Updated"
-			resp.Data = nil
-			w.WriteHeader(http.StatusOK)
+				resp.Code = http.StatusOK
+				resp.Message = "Data Base Updated"
+				resp.Data = nil
+				w.WriteHeader(http.StatusOK)
+			}
 		}
 	}
 	json.NewEncoder(w).Encode(resp)
-
 }
 
 // GetAllRules for get all rules in controller
@@ -125,10 +135,6 @@ func RemoveRuleByRuleID(w http.ResponseWriter, r *http.Request) {
 				},
 			}
 			dispurserDb.AddJob(jobModel)
-			err := rules.DispursedRule(RuleID)
-			if err != nil {
-				log.Println("ERROR: [RU]: ", err)
-			}
 		}
 		resp.Code = http.StatusOK
 		resp.Message = Message
