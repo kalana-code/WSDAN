@@ -2,6 +2,7 @@ package controller
 
 import (
 	"Beq/packethandler/service"
+	packethandlerUtil "Beq/packethandler/utils"
 	rulesModel "Beq/rules/model"
 	"fmt"
 	"log"
@@ -27,8 +28,12 @@ var (
 	errorLog    string = "ERROR: [PC]:"
 )
 
-func packetController() {
-
+// PacketController is used to handle all the functions related to an incomming packet
+func PacketController() {
+	err=packethandlerUtil.IptableInitializer() 
+	if err != nil {
+		log.Println(errorLog, "Error when initializing iptables")
+	}
 	nfq, err := netfilter.NewNFQueue(0, 100, netfilter.NF_DEFAULT_PACKET_SIZE)
 	if err != nil {
 		log.Println(errorLog, "Error when initializing NFQueue:", err)
