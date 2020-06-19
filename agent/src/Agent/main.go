@@ -29,20 +29,13 @@ var (
 )
 
 func main() {
-	// log.Println(infoLog, "Starting Node Functions")
-	// log.Println("Test rule only .............................!!!")
-	// firstRule := database.RuleConfiguration{
-	// 	DstIP:    "192.168.0.2",
-	// 	Protocol: "ICMPv4",
-	// 	FlowID:   "124",
-	// 	DstMAC:   "b8:27:eb:5a:63:98",
-	// }
-	// database.CreateRule("1wesw", firstRule)
+	log.Println(infoLog, "Starting Node Functions")
 	err = initializer.IptableInitializer()
 	if err != nil {
 		log.Println(errorLog, "Error when initializing iptables:", err)
 	}
-	go doEvery(5000*time.Millisecond, client.SendNodeData)
+	client.SendNodeData()
+	go doEvery(300000*time.Millisecond, client.SendNodeData)
 	go server.Server()
 	nfq, err := netfilter.NewNFQueue(0, 100, netfilter.NF_DEFAULT_PACKET_SIZE)
 	if err != nil {
