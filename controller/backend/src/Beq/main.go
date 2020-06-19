@@ -51,7 +51,7 @@ func server() {
 
 func packetHandler() {
 	log.Println("INFO: [PH]: Packet Handler is Activeted")
-	// packethandler.PacketController()
+	packethandler.PacketController()
 }
 
 func requestDispurser(task *dispurserQueue.JobQueue) {
