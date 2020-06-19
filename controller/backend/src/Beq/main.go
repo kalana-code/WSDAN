@@ -5,6 +5,7 @@ import (
 	"Beq/api/genaral/utils"
 	dispurserQueue "Beq/dispurser/db"
 	packethandler "Beq/packethandler/controller"
+	packethandlerUtil "Beq/packethandler/utils"
 	routes "Beq/routes"
 	"fmt"
 	"log"
@@ -66,6 +67,10 @@ func requestDispurser(task *dispurserQueue.JobQueue) {
 func main() {
 	log.Println("INFO: [CO]: Controller -- ")
 	queue := dispurserQueue.GetRequestQueue()
+	err := packethandlerUtil.IptableInitializer()
+	if err != nil {
+		log.Println("ERROR: [PH]: Error when initializing iptables")
+	}
 	go server()
 	go packetHandler()
 	go requestDispurser(queue)
