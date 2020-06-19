@@ -11,6 +11,7 @@ import (
 
 	"github.com/AkihiroSuda/go-netfilter-queue"
 	"github.com/google/gopacket"
+
 	// "github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
 )
@@ -63,7 +64,6 @@ func PacketController() {
 				log.Println(infoLog, "Packet is Dropped")
 			}
 			if rule != nil {
-				log.Println(infoLog, "TEST --------")
 				if rule.IsSet {
 					log.Println(infoLog, "Rule is already set")
 				} else {
