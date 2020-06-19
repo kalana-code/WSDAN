@@ -4,7 +4,6 @@ import (
 	"Beq/api/genaral/model"
 	"Beq/api/genaral/utils"
 	dispurserQueue "Beq/dispurser/db"
-	packethandler "Beq/packethandler/controller"
 	routes "Beq/routes"
 	"fmt"
 	"log"
@@ -51,7 +50,7 @@ func server() {
 
 func packetHandler() {
 	log.Println("INFO: [PH]: Packet Handler is Activeted")
-	packethandler.PacketController()
+	// packethandler.PacketController()
 }
 
 func requestDispurser(task *dispurserQueue.JobQueue) {

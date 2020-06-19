@@ -65,7 +65,7 @@ func (*RuleDB) FindRuleByDstIPAndProtocol(packetDetails packethandlerModel.Packe
 		for _, rule := range instance {
 			if rule.DstIP == packetDetails.DstIP && rule.Protocol == packetDetails.Protocol {
 				return &rule, nil
-			}	
+			}
 		}
 		return nil, nil
 	}
@@ -126,6 +126,7 @@ func (*RuleDB) GetAllRules() (*[]model.Rule, error) {
 	rules := []model.Rule{}
 	if instance != nil {
 		for RuleID, RuleData := range instance {
+			fmt.Println(RuleData)
 			temp := model.Rule{}
 			temp.Populate(RuleID, RuleData)
 			rules = append(rules, temp)

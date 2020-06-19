@@ -39,6 +39,7 @@ type Rule struct {
 //Populate populating the data
 func (obj *Rule) Populate(RuleID string, data RulesDataRow) {
 	obj.RuleID = RuleID
+	obj.Protocol = data.Protocol
 	obj.DstIP = data.DstIP
 	obj.DstMAC = data.DstMAC
 	obj.FlowID = data.FlowID

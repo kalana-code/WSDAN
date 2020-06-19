@@ -143,7 +143,7 @@ class RuleInsertForm extends Component {
         FlowID: this.state.FlowID,
         Protocol: this.state.Protocol,
         DstIP: this.state.DstIP,
-        Interface: this.state.DstMAC,
+        Interface: this.state.Interface,
         DstMAC: this.state.DstMAC,
         Action: this.state.Action, 
       };
