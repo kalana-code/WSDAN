@@ -11,6 +11,7 @@ import (
 
 	"github.com/AkihiroSuda/go-netfilter-queue"
 	"github.com/google/gopacket"
+
 	// "github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
 )
@@ -30,10 +31,6 @@ var (
 
 // PacketController is used to handle all the functions related to an incomming packet
 func PacketController() {
-	// err = packethandlerUtil.IptableInitializer()
-	// if err != nil {
-	// 	log.Println(errorLog, "Error when initializing iptables")
-	// }
 	nfq, err := netfilter.NewNFQueue(0, 100, netfilter.NF_DEFAULT_PACKET_SIZE)
 	if err != nil {
 		log.Println(errorLog, "Error when initializing NFQueue:", err)
@@ -63,7 +60,6 @@ func PacketController() {
 				log.Println(infoLog, "Packet is Dropped")
 			}
 			if rule != nil {
-				log.Println(infoLog, "TEST --------")
 				if rule.IsSet {
 					log.Println(infoLog, "Rule is already set")
 				} else {

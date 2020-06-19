@@ -61,15 +61,30 @@ func iptableRuleFlusher() error {
 func iptableInputHandler() error {
 	log.Println(infoLog, "Inserting iptable INPUT rules")
 	ip, _, _ := GetIPAndMAC()
-	err := exec.Command("sudo", "iptables", "-I", "INPUT", "1", "-p", "tcp", "--dport", "22", "-j", "ACCEPT").Run()
+	err := exec.Command("sudo", "iptables", "-t", "mangle", "-I", "PREROUTING", "1", "-p", "tcp", "--dport", "22", "-j", "ACCEPT").Run()
 	if err != nil {
 		log.Println(errorLog, "Error when inserting INPUT rule: ssh")
 		return err
 	}
-	err = exec.Command("sudo", "iptables", "-I", "INPUT", "2", "-d", ip, "-j", "ACCEPT").Run()
+	err = exec.Command("sudo", "iptables", "-t", "mangle", "-I", "PREROUTING", "2", "-p", "udp", "--dport", "67:68", "--sport", "67:68", "-j", "ACCEPT").Run()
+	if err != nil {
+		log.Println(errorLog, "Error when inserting INPUT rule: dhcp")
+		return err
+	}
+	err = exec.Command("sudo", "iptables", "-t", "mangle", "-I", "PREROUTING", "3", "-d", ip, "-j", "ACCEPT").Run()
 	if err != nil {
 		log.Println(errorLog, "Error when inserting INPUT rule: allow packet with dst ip as node ip")
 		return err
 	}
-	return exec.Command("sudo", "iptables", "-I", "INPUT", "3", "-i", "wlan0", "-j", "NFQUEUE", "--queue-num", "0").Run()
+	err = exec.Command("sudo", "iptables", "-t", "mangle", "-I", "PREROUTING", "4", "-d", "192.168.8.1", "-j", "ACCEPT").Run()
+	if err != nil {
+		log.Println(errorLog, "Error when inserting INPUT rule: allow packet with dst ip as router ip")
+		return err
+	}
+	err = exec.Command("sudo", "iptables", "-t", "mangle", "-I", "PREROUTING", "5", "-m", "iprange", "--src-range", "192.168.8.1-192.168.8.200", "-j", "ACCEPT").Run()
+	if err != nil {
+		log.Println(errorLog, "Error when inserting INPUT rule: allow packet with src ip within router dhcp ip range")
+		return err
+	}
+	return exec.Command("sudo", "iptables", "-t", "mangle", "-I", "PREROUTING", "6", "-i", "wlan0", "-j", "NFQUEUE", "--queue-num", "0").Run()
 }
