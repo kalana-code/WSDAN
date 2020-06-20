@@ -9,7 +9,7 @@ import "./style/network/css/network-manipulation.css";
 
 import { Grid } from "react-bootstrap";
 import RuleConfig from "components/RuleConfig/RuleConfig.jsx";
-import config from "./../config/config"
+import config from "./../config/config";
 class RuleManager extends Component {
   tempState = {};
   state = {
@@ -65,115 +65,65 @@ class RuleManager extends Component {
   options = {
     nodes: {
       shape: "dot",
-      size: 16,
+      size: 14,
+      font: {
+        color: "gray",
+        size: 12,
+      },
+    },
+    edges: {
+      font: {
+        color: "gray",
+        size: 12,
+      },
     },
     groups: {
-      switch: {
-        shape: "icon",
-        color: "#FF9900", // orange
-        icon: {
-          face: "FontAwesome",
-          code: "\uf10b",
-          size: 50,
-          color: "orange",
-        },
-      },
-      Agents: {
-        shape: "icon",
-        color: "#FF9900", // orange
-        icon: {
-          face: "FontAwesome",
-          code: "\uf21b",
-          size: 50,
-          color: "gray",
-        },
-      },
-      Gateway: {
-        shape: "icon",
-        color: "#FF9900", // orange
-        icon: {
-          face: "FontAwesome",
-          code: "\uf233",
-          size: 50,
-          color: "gray",
-        },
-      },
+      
+      
       AP: {
         shape: "icon",
-        color: "#FF9900", // orange
         icon: {
           face: "FontAwesome",
-          code: "\uf1eb",
-          size: 50,
-          color: "gray",
+          code: "\uf2ce",
+          size: 40,
+          color: "#0F9960",
         },
       },
       NotAP: {
         shape: "icon",
-        color: "#FF9900", // orange
         icon: {
           face: "FontAwesome",
-          code: "\uf2da",
-          size: 50,
-          color: "gray",
+          code: "\uf2ce",
+          size: 40,
+          color: "#A7B6C2",
         },
-      },
-      Laptop: {
-        shape: "icon",
-        color: "#FF9900", // orange
-        icon: {
-          face: "FontAwesome",
-          code: "\uf109",
-          size: 50,
-          color: "gray",
-        },
-      },
-      Mobile: {
-        shape: "icon",
-        color: "#FF9900", // orange
-        icon: {
-          face: "FontAwesome",
-          code: "\uf10b",
-          size: 50,
-          color: "gray",
-        },
-      },
-      Sensor: {
-        shape: "icon",
-        color: "#FF9900", // orange
-        icon: {
-          face: "FontAwesome",
-          code: "\uf512",
-          size: 50,
-          color: "gray",
-        },
-      },
+      }
     },
-    height: "300px",
+    height: "400px",
     layout: {
       randomSeed: 55,
     },
     physics: {
       enabled: true,
-      forceAtlas2Based: {
-        gravitationalConstant: -26,
-        centralGravity: 0.005,
-        springLength: 230,
-        springConstant: 0.18,
-      },
-      maxVelocity: 146,
-      solver: "forceAtlas2Based",
-      timestep: 0.35,
-      stabilization: {
-        enabled: true,
-        iterations: 20,
-        updateInterval: 25,
-      },
+      // forceAtlas2Based: {
+      //   gravitationalConstant: -26,
+      //   centralGravity: 0.005,
+      //   springLength: 3000,
+      //   springConstant: 0.18
+      // },
+      // maxVelocity: 146,
+      // solver: "forceAtlas2Based",
+      // timestep: 0.35,
+      // stabilization: {
+      //   enabled: true,
+      //   iterations: 20,
+      //   updateInterval: 25
+      // }
     },
   };
 
   getData = () => {
-    axios.get(`http://`+config.host+`:8081/GetNodeInfo`).then(
+    axios.get(`http://` + config.host + `:8081/GetNodeInfo`).then(
       (response) => {
         if (response.status === 200) {
           if (response.data.Data.graphData.nodes.length > 0) {
@@ -232,18 +182,39 @@ class RuleManager extends Component {
     return (
       <div className="content">
         <Grid fluid>
-          <ButtonGroup minimal={true}>
-            <Button icon="refresh" onClick={this.getData}>refresh</Button>
-          </ButtonGroup>
-          <p>{this.setState.noNode ? "Not identified any node" : ""}</p>
-          <Graph
-            graph={this.state.graph}
-            options={this.options}
-            events={this.events}
-            getEdges={this.getEdges}
-            getNodes={this.getNodes}
-            vis={(vis) => (this.vis = vis)}
-          />
+          <div className="graph_holder">
+            <div className="refresh_button_holder">
+              <ButtonGroup minimal={true}>
+                <Button icon="refresh" onClick={this.getData}>
+                  refresh
+                </Button>
+              </ButtonGroup>
+            </div>
+            {this.state.noNode && (
+              <div className="msg_text bp3-text-muted bp3-text-small">
+                <div class="sk-cube-grid">
+                  <div class="sk-cube sk-cube1"></div>
+                  <div class="sk-cube sk-cube2"></div>
+                  <div class="sk-cube sk-cube3"></div>
+                  <div class="sk-cube sk-cube4"></div>
+                  <div class="sk-cube sk-cube5"></div>
+                  <div class="sk-cube sk-cube6"></div>
+                  <div class="sk-cube sk-cube7"></div>
+                  <div class="sk-cube sk-cube8"></div>
+                  <div class="sk-cube sk-cube9"></div>
+                </div>
+                Waiting for Nodes Information....
+              </div>
+            )}
+            <Graph
+              graph={this.state.graph}
+              options={this.options}
+              events={this.events}
+              getEdges={this.getEdges}
+              getNodes={this.getNodes}
+              vis={(vis) => (this.vis = vis)}
+            />
+          </div>
         </Grid>
         <RuleConfig SelectedNodes={this.state.selectNode} />
       </div>

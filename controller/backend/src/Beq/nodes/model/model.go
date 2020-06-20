@@ -27,7 +27,7 @@ func (obj *GrpNodeLink) SetLink(From int, To int, Label string) {
 	obj.To = To
 	obj.Label = Label
 	obj.ArrowStrikethrough = false
-	obj.Length = 150
+	obj.Length = 200
 	obj.Dashes = true
 	// set Arrow head
 	obj.Arrows = Arrow{}

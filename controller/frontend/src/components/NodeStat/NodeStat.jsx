@@ -38,9 +38,7 @@ class NodeStat extends Component {
           panel={<StatPanel {...this.props} />}
           panelClassName="ember-panel"
         />
-       <Tab id="cn" disabled title="Configuration" panel={<ConfigPanel />} />
-        <Tabs.Expander />
-        <input className="bp3-input" type="text" placeholder="Search..." />
+     
       </Tabs>
     );
   }

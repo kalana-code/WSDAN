@@ -54,7 +54,7 @@ class Home extends React.Component {
                 /> */}
                 <img src={ require('./img/Home.png') } />
               </div>
-              s
+              
             </Col>
             <Col lg="6" sm="12">
               <Callout title="Note" icon="info-sign" intent="success">

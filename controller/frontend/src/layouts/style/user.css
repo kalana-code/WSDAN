@@ -110,20 +110,21 @@ nav{
   float: right;
   display: flex;
   flex-direction: column;
-  color: red; 
+  
+ 
   
 }
 
 .side-bar-left .user-nav-link{
   /* font-size: 13px; */
-  color: #180909;
+  color: #394B59;
   padding: 10px 10px;
   /* background:rgb(255, 255, 255); */
   margin-bottom:10px ;
   /* font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */
   text-decoration: none;
-  text-align: right;
-  font-weight: 200;
+  text-align: left;
+  font-weight: 400;
   
 }
 
