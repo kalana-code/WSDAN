@@ -22,6 +22,11 @@ type ControllerRuleConfiguration struct {
 	Action    string `json:"Action"`
 }
 
+// RemoveRule is used to remove rule in the node database
+type RemoveRule struct {
+	RuleID string `json:"RuleID"`
+}
+
 var (
 	defaultRule = database.RuleConfiguration{
 		DstIP:     "any",
@@ -59,5 +64,12 @@ func RuleUpdater(rule ControllerRuleConfiguration) {
 		Action:    rule.Action,
 	}
 	database.CreateRule(rule.RuleID, newRuleConf)
+	database.ViewRules()
+}
+
+// RuleRemoveByRuleID is used to remove a rule by RuleID in database
+func RuleRemoveByRuleID(removeRule RemoveRule) {
+	log.Println(infoLog, "Invoke RuleRemoveByRuleID")
+	database.DeleteRule(removeRule.RuleID)
 	database.ViewRules()
 }
