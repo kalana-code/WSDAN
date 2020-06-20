@@ -10,10 +10,11 @@ import (
 )
 
 var (
-	infoLog  string = "INFO: [SH]:"
-	errorLog string = "ERROR: [SH]:"
-	port     string = ":8082"
-	endPoint string = "/AddFlowRule"
+	infoLog                string = "INFO: [SH]:"
+	errorLog               string = "ERROR: [SH]:"
+	port                   string = ":8082"
+	endPointAddFlowRule    string = "/AddFlowRule"
+	endPointRemoveFlowRule string = "/RemoveFlowRule"
 )
 
 //NodeDetails is used to store node data
@@ -40,7 +41,8 @@ type NodeData struct {
 func Server() {
 	log.Print(infoLog, "Starting Server")
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc(endPoint, addNodeRule)
+	router.HandleFunc(endPointAddFlowRule, addNodeRule)
+	router.HandleFunc(endPointRemoveFlowRule, removeNodeRule)
 	log.Println(http.ListenAndServe(port, router))
 }
 
@@ -61,5 +63,25 @@ func addNodeRule(w http.ResponseWriter, r *http.Request) {
 		}
 		log.Print(infoLog, "Recieved Rule:", string(jsonData))
 		flowmanager.RuleUpdater(rule)
+	}
+}
+
+func removeNodeRule(w http.ResponseWriter, r *http.Request) {
+	log.Print(infoLog, "Removing Node Rule(By RuleID)")
+	rule := flowmanager.RemoveRule{}
+	err := json.NewDecoder(r.Body).Decode(&rule)
+	if err != nil {
+		log.Println(errorLog, "Recieved Remove Rule(By RuleID) Error:", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	} else {
+		log.Print(infoLog, "Remove rule(By RuleID) is received successfully")
+		w.WriteHeader(http.StatusAccepted)
+		w.Write([]byte(http.StatusText(http.StatusAccepted) + ": Remoce Rule(By RuleID) is received successfully"))
+		jsonData, jsonErr := json.Marshal(rule)
+		if jsonErr != nil {
+			log.Println(errorLog, "Recieved Remove Rule(By RuleID) JSON Error:", jsonErr)
+		}
+		log.Print(infoLog, "Recieved Remove Rule(By RuleID):", string(jsonData))
+		flowmanager.RuleRemoveByRuleID(rule)
 	}
 }
