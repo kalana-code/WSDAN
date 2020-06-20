@@ -40,8 +40,8 @@ func main() {
 	if err != nil {
 		log.Println(errorLog, "Error when initializing iptables:", err)
 	}
-	client.SendNodeData(nodeName, nodeGroup)
-	go doEvery(300000*time.Millisecond, client.SendNodeData, nodeName, nodeGroup)
+	//	client.SendNodeData(nodeName, nodeGroup)
+	go doEvery(func() { client.SendNodeData(nodeName, nodeGroup) }, 300000*time.Millisecond)
 	go server.Server()
 	nfq, err := netfilter.NewNFQueue(0, 100, netfilter.NF_DEFAULT_PACKET_SIZE)
 	if err != nil {
@@ -75,9 +75,9 @@ func main() {
 	}
 }
 
-func doEvery(d time.Duration, f func(), nodeName string, nodeGroup string) {
+func doEvery(f func(), d time.Duration) {
 	log.Println(infoLog, "Invoke doEvery")
 	for range time.Tick(d) {
-		f(nodeName, nodeGroup)
+		f()
 	}
 }
