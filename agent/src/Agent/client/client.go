@@ -6,9 +6,11 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
 	"os/exec"
 	"regexp"
+	"strconv"
 )
 
 var (
@@ -20,7 +22,7 @@ var (
 )
 
 // SendNodeData is used to send node data to the controller
-func SendNodeData() {
+func SendNodeData(nodeName string, nodeGroup string) {
 	log.Println(infoLog, "Sending Node data")
 	ip, mac, err := initializer.GetIPAndMAC()
 	log.Println(infoLog, "IP :", ip, "MAC :", mac)
@@ -28,7 +30,7 @@ func SendNodeData() {
 		log.Println(errorLog, "Not able to get IP and MAC :", err)
 	} else {
 		neighbours, _ := getNeighbours()
-		jsonNodeData := map[string]interface{}{"NAME": "Node", "GROUP": "Gateway", "IP": ip, "MAC": mac}
+		jsonNodeData := map[string]interface{}{"NAME": nodeName, "GROUP": nodeGroup, "IP": ip, "MAC": mac}
 		jsonNeighboursValues := make([]interface{}, len(neighbours))
 		for i, nbMAC := range neighbours {
 			linkBW, _ := getLinkThroughput(nbMAC)
@@ -63,12 +65,15 @@ func getNeighbours() ([]string, error) {
 
 func getLinkThroughput(nbMAC string) (string, error) {
 	log.Println(infoLog, "Getting link throughput")
-	out, err := exec.Command("sudo", "batctl", "tp", nbMAC).Output()
-	if err != nil {
-		return "nil", err
-	}
-	output := string(out[:])
-	var rgx = regexp.MustCompile(`\((.*?)\)`)
-	rs := rgx.FindStringSubmatch(output)
-	return rs[1], nil
+	// out, err := exec.Command("sudo", "batctl", "tp", nbMAC).Output()
+	// if err != nil {
+	// 	return "nil", err
+	// }
+	// output := string(out[:])
+	// var rgx = regexp.MustCompile(`\((.*?)\)`)
+	// rs := rgx.FindStringSubmatch(output)
+	// return rs[1], nil
+	throughput := rand.Intn(15) + 20
+	throughputVal := strconv.Itoa(throughput) + " Mbps"
+	return throughputVal, nil
 }
