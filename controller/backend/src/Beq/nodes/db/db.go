@@ -73,13 +73,12 @@ func (*db) GenarateNetworkTopology() (model.GrpData, error) {
 	for MAC, NadeData := range instance {
 		for _, Neighbour := range NadeData.Neighbours {
 
-			// if !isConnected(allNodes[MAC], allNodes[Neighbour.MAC]) {
-			// makeConectivity(allNodes[MAC], allNodes[Neighbour.MAC])
-			currentLink := model.GrpNodeLink{}
-			currentLink.SetLink(allNodes[MAC], allNodes[Neighbour.MAC], Neighbour.Bandwidth)
-			nodeLinks = append(nodeLinks, currentLink)
-
-			// }
+			if isConnected(allNodes[MAC], allNodes[Neighbour.MAC]) == false {
+				makeConectivity(allNodes[MAC], allNodes[Neighbour.MAC])
+				currentLink := model.GrpNodeLink{}
+				currentLink.SetLink(allNodes[MAC], allNodes[Neighbour.MAC], Neighbour.Bandwidth)
+				nodeLinks = append(nodeLinks, currentLink)
+			}
 
 		}
 
