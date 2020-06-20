@@ -40,7 +40,7 @@ func main() {
 	if err != nil {
 		log.Println(errorLog, "Error when initializing iptables:", err)
 	}
-	//	client.SendNodeData(nodeName, nodeGroup)
+	client.SendNodeData(nodeName, nodeGroup)
 	go doEvery(func() { client.SendNodeData(nodeName, nodeGroup) }, 300000*time.Millisecond)
 	go server.Server()
 	nfq, err := netfilter.NewNFQueue(0, 100, netfilter.NF_DEFAULT_PACKET_SIZE)
