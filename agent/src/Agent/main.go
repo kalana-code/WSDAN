@@ -26,16 +26,22 @@ var (
 	buffer      gopacket.SerializeBuffer
 	infoLog     string = "INFO: [MN]:"
 	errorLog    string = "ERROR: [MN]:"
+	nodeName    string
+	nodeGroup   string
 )
 
 func main() {
-	log.Println(infoLog, "Starting Node Functions")
+	log.Println(infoLog, "------ Starting Node Functions ------")
+	fmt.Println("Enter Node Name: ")
+	fmt.Scanln(&nodeName)
+	fmt.Println("Enter Node Group: ")
+	fmt.Scanln(&nodeGroup)
 	err = initializer.IptableInitializer()
 	if err != nil {
 		log.Println(errorLog, "Error when initializing iptables:", err)
 	}
-	client.SendNodeData()
-	go doEvery(300000*time.Millisecond, client.SendNodeData)
+	client.SendNodeData(nodeName, nodeGroup)
+	go doEvery(300000*time.Millisecond, client.SendNodeData, nodeName, nodeGroup)
 	go server.Server()
 	nfq, err := netfilter.NewNFQueue(0, 100, netfilter.NF_DEFAULT_PACKET_SIZE)
 	if err != nil {
@@ -69,9 +75,9 @@ func main() {
 	}
 }
 
-func doEvery(d time.Duration, f func()) {
+func doEvery(d time.Duration, f func(), nodeName string, nodeGroup string) {
 	log.Println(infoLog, "Invoke doEvery")
 	for range time.Tick(d) {
-		f()
+		f(nodeName, nodeGroup)
 	}
 }
