@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os/exec"
 	"regexp"
+	"strconv"
 )
 
 var (
@@ -73,6 +74,6 @@ func getLinkThroughput(nbMAC string) (string, error) {
 	// rs := rgx.FindStringSubmatch(output)
 	// return rs[1], nil
 	throughput := rand.Intn(15) + 20
-	throughputVal := string(throughput) + "Mbps"
+	throughputVal := strconv.Itoa(throughput) + " Mbps"
 	return throughputVal, nil
 }
