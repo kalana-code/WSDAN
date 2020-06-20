@@ -152,6 +152,7 @@ class RuleInsertForm extends Component {
         (response) => {
           if (response.status === 200) {
             this.setState({ isLoading: false });
+            this.props.getRuleData()
           }
         },
         (error) => {
@@ -197,7 +198,7 @@ class RuleInsertForm extends Component {
       if(a!==null){
         NeighboursMac.push(<option  key={0} value=""> --Select DstMAC--</option>)
         for(let i = 0;i<a.length;i++){
-            
+            console.log(a[i])
             NeighboursMac.push(<option key ={i+1} value={a[i].MAC}>{a[i].MAC}</option>)
         }
       }

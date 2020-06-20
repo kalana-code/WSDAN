@@ -40,7 +40,7 @@ class RuleConfig extends Component {
     }
 
     if(id!=null){
-      axios.get(`http://` + config.host + `:8081//RemoveRule`+id).then((res) => {
+      axios.get(`http://` + config.host + `:8081/RemoveRule/`+id).then((res) => {
       if (res.status === 200) {
         this.getData()
       }});
@@ -143,6 +143,7 @@ class RuleConfig extends Component {
               {...this.props}
               {...this.state}
               toggleDrawer={this.handleOpenRuleInsertForm}
+              getRuleData={this.getData}
             />
           }
         />
@@ -164,10 +165,8 @@ const RulesPanel = (props) => (
         >
           add rule
         </Button>
-        <Button icon="database">get rules</Button>
-        <Button icon="trash">delete</Button>
       </ButtonGroup>
-      <hr />
+     
       <Callout
         title={
           props.SelectedNodes.length > 0
@@ -175,10 +174,11 @@ const RulesPanel = (props) => (
             : "Please Select a Node"
         }
         icon={"info-sign"}
-        intent={props.SelectedNodes.length > 0 ? "success" : "warning"}
+        intent={props.SelectedNodes.length > 0 ? "success" : "minimal"}
       >
         {props.SelectedNodes.length > 0 ? (
           <table>
+            <tbody>
             {/* Network Address */}
             <tr>
               <td>
@@ -215,7 +215,7 @@ const RulesPanel = (props) => (
                         .NodeData.Node.MAC}
                 </p>
               </td>
-            </tr>
+            </tr></tbody>
           </table>
         ) : (
           ""
@@ -251,6 +251,7 @@ const RulesPanel = (props) => (
       {...props}
       isOpen={props.isOpen}
       toggleDrawer={props.toggleDrawer}
+      getRuleData={props.getRuleData}
     />
   </div>
 );
@@ -261,159 +262,3 @@ const ConfigPanel = () => (
   </div>
 );
 
-// const RulesPanel = (props) => (
-//   <div>
-//     <div>
-//       <H4>Rule Manager</H4>
-
-//       {props.SelectedNodes.length > 0 ? (
-//         <div>
-//           <hr />
-//           <table className="bp3-text-muted">
-//             <tr>
-//               <td>
-//                 <p className="bp3-text">
-//                   <b>Rule Manager</b>
-//                 </p>
-//               </td>
-//               <td className="pull-right2">
-//                 <p className="bp3-text-small">:</p>
-//               </td>
-//             </tr>
-//             <tr>
-//               <th>
-//                 <p className="bp3-text-small">
-//                   <b>Rule</b>
-//                 </p>
-//               </th>
-//               <th className="pull-right10">
-//                 <p className="bp3-text-small">
-//                   <b>Hit Count</b>
-//                 </p>
-//               </th>
-//               <th className="pull-right10">
-//                 <p className="bp3-text-small">
-//                   <b>State</b>
-//                 </p>
-//               </th>
-//               <th className="pull-right10"></th>
-//             </tr>
-//             <tr>
-//               <td>
-//                 <p className="bp3-text-small"># Rule 00123</p>
-//               </td>
-//               <td className="pull-right10">
-//                 <p className="bp3-text-small">
-//                   <b>5</b>
-//                   <Trend
-//                     smooth
-//                     height={35}
-//                     width={70}
-//                     autoDraw
-//                     // autoDrawDuration={3000}
-//                     autoDrawEasing="ease-out"
-//                     data={[0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0]}
-//                     gradient={["#106BA3"]}
-//                     radius={10}
-//                     strokeWidth={0.5}
-//                     strokeLinecap={"butt"}
-//                   />
-//                 </p>
-//               </td>
-//               <td className="pull-right10">
-//                 <p className="bp3-text-small">
-//                   <Icon icon={"dot"} iconSize={17} intent="success" />
-//                   <b>Active</b>
-//                 </p>
-//               </td>
-//               <td className="pull-right10">
-//                 <ButtonGroup minimal={true} >
-//                   <Button icon="cube-add" />
-//                   <Divider />
-//                   <Button icon="cube-remove" />
-//                   <Divider />
-//                   <Button icon="swap-horizontal" />
-//                 </ButtonGroup>
-//               </td>
-//             </tr>
-//             <tr>
-//               <td>
-//                 <p className="bp3-text-small"># Rule 00124</p>
-//               </td>
-//               <td className="pull-right10">
-//                 <p className="bp3-text-small">
-//                   <b>9</b>
-//                   <Trend
-//                     smooth
-//                     height={35}
-//                     width={70}
-//                     autoDraw
-//                     // autoDrawDuration={3000}
-//                     autoDrawEasing="ease-out"
-//                     data={[0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 4, 1, 1, 0]}
-//                     gradient={["#752F75"]}
-//                     radius={10}
-//                     strokeWidth={0.5}
-//                     strokeLinecap={"butt"}
-//                   />
-//                 </p>
-//               </td>
-//               <td className="pull-right10">
-//                 <p className="bp3-text-small">
-//                   <Icon icon={"dot"} iconSize={17} intent="danger" />
-//                   <b>Inactive</b>
-//                 </p>
-//               </td>
-//               <td className="pull-right10"></td>
-//             </tr>
-//             <tr>
-//               <td>
-//                 <p className="bp3-text-small"># Rule 00130</p>
-//               </td>
-//               <td className="pull-right10">
-//                 <p className="bp3-text-small">
-//                   <b>0</b>
-//                   <Trend
-//                     smooth
-//                     height={35}
-//                     width={70}
-//                     autoDraw
-//                     // autoDrawDuration={3000}
-//                     autoDrawEasing="ease-out"
-//                     data={[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}
-//                     gradient={["#752F75"]}
-//                     radius={10}
-//                     strokeWidth={0.5}
-//                     strokeLinecap={"butt"}
-//                   />
-//                 </p>
-//               </td>
-//               <td className="pull-right10">
-//                 <p className="bp3-text-small">
-//                   <Icon icon={"dot"} iconSize={17} intent="success" />
-//                   <b>Active</b>
-//                 </p>
-//               </td>
-//               <td className="pull-right10"></td>
-//             </tr>
-//           </table>
-//           <hr />
-//           <table className="bp3-text-muted">
-//             <tr>
-//               <td>
-//                 <p className="bp3-text">
-//                   <b>Rule Setter</b>
-//                 </p>
-//               </td>
-//               <td className="pull-right2">
-//                 <p className="bp3-text-small">:</p>
-//               </td>
-//             </tr>
-//           </table>
-//         </div>
-//       ) : (
-//         <p class="bp3-text-muted bp3-text-small">Please select a Node</p>
-//       )}
-//     </div>
-//   </div>
-// );

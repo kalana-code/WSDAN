@@ -36,7 +36,7 @@ func PacketAnalyzer(packet gopacket.Packet) (gopacket.SerializeBuffer, *ruleMode
 		ipl, _ = ipLayer.(*layers.IPv4)
 		packetDetails.DstIP = ipl.DstIP.String()
 		packetDetails.Protocol = ipl.Protocol.String()
-		log.Println(infoLog, "DstIP : ",packetDetails.DstIP, " SrcIP : ",ipl.SrcIP.String())
+		log.Println(infoLog, "DstIP : ", packetDetails.DstIP, " SrcIP : ", ipl.SrcIP.String())
 	}
 	udpLayer := packet.Layer(layers.LayerTypeUDP)
 	if udpLayer != nil {
@@ -148,6 +148,7 @@ func DispurseFlow(flowID string) {
 			DstIP:     flow.DstIP,
 			Interface: flow.Interface,
 			DstMAC:    flow.DstMAC,
+			Action:    flow.Action,
 		}
 		dispureFlow := dispurseModel.Job{
 			Type:        dispurseModel.TypeAddRule,

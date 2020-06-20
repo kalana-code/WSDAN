@@ -63,7 +63,7 @@ func PacketController() {
 				if rule.IsSet {
 					log.Println(infoLog, "Rule is already set")
 				} else {
-					log.Println(infoLog, "Have to implement rule dispurser")
+					log.Println(infoLog, "Rule dispursering")
 					service.DispurseFlow(rule.FlowID)
 				}
 			}
