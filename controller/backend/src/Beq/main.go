@@ -74,13 +74,13 @@ func main() {
 	queue := dispurserQueue.GetRequestQueue()
 	setting := setting.GetSystemSetting()
 
-	InterfaceName := "en0"
 	err := packethandlerUtil.IptableInitializer()
 	if err != nil {
 		log.Println("ERROR: [PH]: Error when initializing iptables")
 		exit()
 	}
 
+	InterfaceName := "wlan0"
 	//get Mac address and IP address
 	IP, MAC, err := GetIPAndMAC(InterfaceName)
 	if err != nil {
