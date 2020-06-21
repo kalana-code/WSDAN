@@ -58,6 +58,11 @@ class RuleConfig extends Component {
             <tr key={index}>
               <td>
                 <ButtonGroup minimal={true} >
+                  <Button>{element.Name}</Button>
+                </ButtonGroup>
+              </td>
+              <td>
+                <ButtonGroup minimal={true} >
                   <Button>{element.NodeIP}</Button>
                 </ButtonGroup>
               </td>
@@ -227,6 +232,7 @@ const RulesPanel = (props) => (
           <table className="bp3-html-table bp3-interactive">
             <thead>
               <tr>
+                <th>Node Name</th>
                 <th>Node IP</th>
                 <th>RuleID</th>
                 <th>FlowId</th>

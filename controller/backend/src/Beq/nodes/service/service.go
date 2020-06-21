@@ -4,7 +4,6 @@ import (
 	"Beq/nodes/db"
 	"Beq/nodes/model"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -35,7 +34,7 @@ func AddNodeInfo(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 		} else {
 			neighbourMap.AddNode(NodeData.Node.MAC, NodeData)
-			fmt.Println(NodeData.Node.IP)
+			log.Println("INFO: [NO]: Node :", NodeData.Node.Name, " info added. IP : ", NodeData.Node.IP)
 			resp.Code = http.StatusOK
 			resp.Message = "Data Base Updated"
 			resp.Data = nil
@@ -56,7 +55,7 @@ func GetNodeInfo(w http.ResponseWriter, r *http.Request) {
 	// set Default value
 	resp.Default()
 
-	GraphData, err := neighbourMap.GenarateNetworkTopology()
+	NodeNameMap, GraphData, err := neighbourMap.GenarateNetworkTopology()
 
 	if err != nil {
 		log.Println("ERROR: Payload Error", err)
@@ -65,6 +64,7 @@ func GetNodeInfo(w http.ResponseWriter, r *http.Request) {
 	} else {
 		data := make(map[string]interface{})
 		data["graphData"] = GraphData
+		data["nodeNames"] = NodeNameMap
 
 		resp.Code = http.StatusOK
 		resp.Message = "Updated time: "

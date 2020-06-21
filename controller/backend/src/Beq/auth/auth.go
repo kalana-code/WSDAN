@@ -21,7 +21,6 @@ func JwtVerify(next http.Handler) http.Handler {
 		var header = r.Header.Get("x-access-token") //Grab the token from the header
 
 		header2 := strings.TrimSpace(header)
-		log.Println(header2)
 		if header2 == "" {
 			// Token is missing, returns with error code 403 Unauthorized
 			w.WriteHeader(http.StatusForbidden)
@@ -39,6 +38,7 @@ func JwtVerify(next http.Handler) http.Handler {
 			json.NewEncoder(w).Encode("Unauthorized")
 			return
 		}
+		log.Println("INFO: [AU]: Authorized User.")
 
 		ctx := context.WithValue(r.Context(), "user", tk)
 

@@ -2,8 +2,8 @@ package db
 
 import (
 	"Beq/nodes/model"
+	setting "Beq/settings/db"
 	"errors"
-	"fmt"
 	"strconv"
 	"sync"
 )
@@ -44,21 +44,32 @@ func (*db) AddNode(MAC string, NodeData model.NodeData) {
 	}
 }
 
-func (*db) GenarateNetworkTopology() (model.GrpData, error) {
+func (*db) GenarateNetworkTopology() (map[string]string, model.GrpData, error) {
 	connectivityChecker = make(map[string]bool)
 	GrpData := model.GrpData{}
 	if instance == nil {
-		return GrpData, errors.New("No Node Data")
+		return nil, GrpData, errors.New("No Node Data")
 	}
 
 	nodes := []model.GrpNode{}
+	config := setting.GetSystemSetting()
+	controllerMAC, err := config.GetMAC()
+	if err != nil {
+		return nil, GrpData, errors.New("No Node Data")
+	}
 
 	for MAC, Index := range allNodes {
 		a := instance[MAC]
 		group := "AP"
+
 		if a.Node.IP == "" {
-			group = "NotAP"
+			if MAC == controllerMAC {
+				group = "Controller"
+			} else {
+				group = "NotAP"
+			}
 		}
+
 		nodes = append(nodes,
 			model.GrpNode{
 				ID:       Index,
@@ -76,7 +87,11 @@ func (*db) GenarateNetworkTopology() (model.GrpData, error) {
 			if isConnected(allNodes[MAC], allNodes[Neighbour.MAC]) == false {
 				makeConectivity(allNodes[MAC], allNodes[Neighbour.MAC])
 				currentLink := model.GrpNodeLink{}
-				currentLink.SetLink(allNodes[MAC], allNodes[Neighbour.MAC], Neighbour.Bandwidth)
+				isCotrollerLink := false
+				if MAC == controllerMAC || Neighbour.MAC == controllerMAC {
+					isCotrollerLink = true
+				}
+				currentLink.SetLink(allNodes[MAC], allNodes[Neighbour.MAC], Neighbour.Bandwidth, isCotrollerLink)
 				nodeLinks = append(nodeLinks, currentLink)
 			}
 
@@ -85,7 +100,7 @@ func (*db) GenarateNetworkTopology() (model.GrpData, error) {
 	}
 	GrpData.Nodes = nodes
 	GrpData.Edges = nodeLinks
-	return GrpData, nil
+	return nodeNameMap, GrpData, nil
 }
 
 func makeConectivity(node1Id int, node2Id int) {
@@ -116,7 +131,6 @@ func isConnected(node1Id int, node2Id int) bool {
 			maxID = node2Id
 		}
 		KEY := strconv.Itoa(maxID) + "edge" + strconv.Itoa(minID)
-		fmt.Println(KEY)
 		if connectivityChecker[KEY] {
 			return true
 		}

@@ -90,11 +90,11 @@ func httpClient(host net.IP, endPoint string, data interface{}) {
 		client := &http.Client{}
 		resp, err := client.Do(req)
 		if err != nil {
-			log.Println("ERROR: [HC]: [HTTP Client] Request failed.")
+			log.Println("ERROR: [HC]: [HTTP Client]  Host : ", host.String(), " Job : AddRule, Request failed.")
 			return
 		}
 		defer resp.Body.Close()
-		log.Println("INFO: [HC]: [HTTP Client] Status Request.", resp.Status)
+		log.Println("INFO: [HC]: [HTTP Client] Status Request. Host : ", host.String(), "Status : ", resp.Status)
 	} else if isRemoveJob {
 		jsonData := map[string]interface{}{
 			"RuleID": RemoveJob.RuleID,
@@ -107,11 +107,11 @@ func httpClient(host net.IP, endPoint string, data interface{}) {
 		client := &http.Client{}
 		resp, err := client.Do(req)
 		if err != nil {
-			log.Println("ERROR: [HC]: [HTTP Client] Request failed.")
+			log.Println("ERROR: [HC]: [HTTP Client]  Host : ", host.String(), " Job : RemoveRule, Request failed.")
 			return
 		}
 		defer resp.Body.Close()
-		log.Println("INFO: [HC]: [HTTP Client] Status Request.", resp.Status)
+		log.Println("INFO: [HC]: [HTTP Client] Status Request. Host : ", host.String(), "Status : ", resp.Status)
 	} else {
 		log.Println("INFO: [HC]: Invalid JOB data")
 	}

@@ -4,7 +4,6 @@ import (
 	packethandlerModel "Beq/packethandler/model"
 	"Beq/rules/model"
 	"errors"
-	"fmt"
 	"strconv"
 	"sync"
 )
@@ -113,7 +112,6 @@ func (*RuleDB) RemoveRulesByFlowID(FlowID string) (string, error) {
 			}
 		}
 		if isRemoved {
-			fmt.Print("S")
 			return "Successfully Rules Belongs To Given FlowID", nil
 		}
 		return "Not Exist Any Flow For Given FlowID ", nil
@@ -126,7 +124,6 @@ func (*RuleDB) GetAllRules() (*[]model.Rule, error) {
 	rules := []model.Rule{}
 	if instance != nil {
 		for RuleID, RuleData := range instance {
-			fmt.Println(RuleData)
 			temp := model.Rule{}
 			temp.Populate(RuleID, RuleData)
 			rules = append(rules, temp)

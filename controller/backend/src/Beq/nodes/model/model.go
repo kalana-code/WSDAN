@@ -12,25 +12,34 @@ type GrpNode struct {
 
 // GrpNodeLink  used for keep ling information between two Nodes
 type GrpNodeLink struct {
-	From               int    `json:"from"`
-	To                 int    `json:"to"`
-	Label              string `json:"label"`
-	ArrowStrikethrough bool   `json:"arrowStrikethrough"`
-	Length             int    `json:"length"`
-	Dashes             bool   `json:"dashes"`
-	Arrows             Arrow  `json:"arrows"`
+	From               int         `json:"from"`
+	To                 int         `json:"to"`
+	Label              string      `json:"label"`
+	ArrowStrikethrough bool        `json:"arrowStrikethrough"`
+	Color              ColourStyle `json:"color"`
+	Dashes             bool        `json:"dashes"`
+	Arrows             Arrow       `json:"arrows"`
+	Length             int         `json:"length"`
+	Physics            bool        `json:"physics"`
 }
 
 //SetLink used for set default value in edge
-func (obj *GrpNodeLink) SetLink(From int, To int, Label string) {
+func (obj *GrpNodeLink) SetLink(From int, To int, Label string, controllerLink bool) {
 	obj.From = From
 	obj.To = To
-	obj.Label = Label
-	obj.ArrowStrikethrough = false
 	obj.Length = 200
+	if !controllerLink {
+		obj.Label = Label
+		// obj.Length = 400
+	}
+	obj.ArrowStrikethrough = false
+	obj.Physics = true
 	obj.Dashes = true
 	// set Arrow head
 	obj.Arrows = Arrow{}
+	obj.Color = ColourStyle{
+		Color: "gray",
+	}
 	obj.Arrows.To = ArrowStyle{Enabled: false}
 	obj.Arrows.From = ArrowStyle{Enabled: false}
 	obj.Arrows.Middle = ArrowStyle{Enabled: false}
@@ -47,6 +56,11 @@ type Arrow struct {
 // ArrowStyle keep Arrow style
 type ArrowStyle struct {
 	Enabled bool `json:"enabled"`
+}
+
+// ColourStyle keep color style
+type ColourStyle struct {
+	Color string `json:"color"`
 }
 
 // GrpData keeps network map

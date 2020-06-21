@@ -4,10 +4,13 @@ import (
 	"Beq/api/genaral/model"
 	"Beq/api/genaral/utils"
 	dispurserQueue "Beq/dispurser/db"
+	setting "Beq/settings/db"
+	"net"
+	"strings"
 
-	// packethandler "Beq/packethandler/controller"
+	packethandler "Beq/packethandler/controller"
 
-	// packethandlerUtil "Beq/packethandler/utils"
+	packethandlerUtil "Beq/packethandler/utils"
 	routes "Beq/routes"
 	"fmt"
 	"log"
@@ -54,7 +57,7 @@ func server() {
 
 func packetHandler() {
 	log.Println("INFO: [PH]: Packet Handler is Activeted")
-	// packethandler.PacketController()
+	packethandler.PacketController()
 }
 
 func requestDispurser(task *dispurserQueue.JobQueue) {
@@ -69,14 +72,49 @@ func requestDispurser(task *dispurserQueue.JobQueue) {
 func main() {
 	log.Println("INFO: [CO]: Controller -- ")
 	queue := dispurserQueue.GetRequestQueue()
-	// err := packethandlerUtil.IptableInitializer()
-	// if err != nil {
-	// 	log.Println("ERROR: [PH]: Error when initializing iptables")
-	// }
+	setting := setting.GetSystemSetting()
+
+	InterfaceName := "en0"
+	err := packethandlerUtil.IptableInitializer()
+	if err != nil {
+		log.Println("ERROR: [PH]: Error when initializing iptables")
+		exit()
+	}
+
+	//get Mac address and IP address
+	IP, MAC, err := GetIPAndMAC(InterfaceName)
+	if err != nil {
+		exit()
+	}
+	//add mac and ip to setting db
+	setting.SetMACandIP(MAC, IP)
+
 	go server()
 	go packetHandler()
 	go requestDispurser(queue)
 	exit()
+}
+
+//GetIPAndMAC used for get IP and MAC address
+func GetIPAndMAC(InterfaceName string) (string, string, error) {
+	log.Println("INFO: [IZ]:Getting MAC address and IP address")
+	var currentIP, currentNetworkHardwareName string
+	currentNetworkHardwareName = InterfaceName
+	netInterface, err := net.InterfaceByName(currentNetworkHardwareName)
+	if err != nil {
+		return "nil", "nil", err
+	}
+	macAddress := netInterface.HardwareAddr
+	addresses, err := netInterface.Addrs()
+	currentIP = addresses[0].String()
+	ipAddr := currentIP[:strings.IndexByte(currentIP, '/')]
+	hwAddr, err := net.ParseMAC(macAddress.String())
+
+	if err != nil {
+		log.Println("ERROR: [IZ]: Not able to parse MAC address :", err)
+		return "nil", "nil", err
+	}
+	return ipAddr, hwAddr.String(), nil
 }
 
 func exit() {

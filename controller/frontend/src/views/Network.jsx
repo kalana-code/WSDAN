@@ -80,8 +80,6 @@ class Network extends Component {
       },
     },
     groups: {
-      
-      
       AP: {
         shape: "icon",
         icon: {
@@ -99,28 +97,32 @@ class Network extends Component {
           size: 40,
           color: "#A7B6C2",
         },
-      }
+      },
+      Controller: {
+        shape: "icon",
+        icon: {
+          face: "FontAwesome",
+          code: "\uf20e",
+          size: 40,
+          color: "#5C255C",
+        },
+      },
     },
     height: "400px",
     layout: {
       randomSeed: 55,
     },
     physics: {
-      enabled: true,
-      // forceAtlas2Based: {
-      //   gravitationalConstant: -26,
-      //   centralGravity: 0.005,
-      //   springLength: 3000,
-      //   springConstant: 0.18
-      // },
-      // maxVelocity: 146,
-      // solver: "forceAtlas2Based",
-      // timestep: 0.35,
-      // stabilization: {
-      //   enabled: true,
-      //   iterations: 20,
-      //   updateInterval: 25
-      // }
+      forceAtlas2Based: {
+        gravitationalConstant: -26,
+        centralGravity: 0.005,
+        springLength: 230,
+        springConstant: 0.18,
+      },
+      maxVelocity: 146,
+      solver: "forceAtlas2Based",
+      timestep: 0.35,
+      stabilization: { iterations: 150 },
     },
   };
 
@@ -192,9 +194,9 @@ class Network extends Component {
                 </Button>
               </ButtonGroup>
             </div>
-            {this.state.noNode && <div className="msg_text bp3-text-muted bp3-text-small">
-           
-            <div class="sk-cube-grid">
+            {this.state.noNode ? (
+              <div className="msg_text bp3-text-muted bp3-text-small">
+                <div class="sk-cube-grid">
                   <div class="sk-cube sk-cube1"></div>
                   <div class="sk-cube sk-cube2"></div>
                   <div class="sk-cube sk-cube3"></div>
@@ -206,15 +208,17 @@ class Network extends Component {
                   <div class="sk-cube sk-cube9"></div>
                 </div>
                 Waiting for Nodes Information....
-            </div>}
-            <Graph
-              graph={this.state.graph}
-              options={this.options}
-              events={this.events}
-              getEdges={this.getEdges}
-              getNodes={this.getNodes}
-              vis={(vis) => (this.vis = vis)}
-            />
+              </div>
+            ) : (
+              <Graph
+                graph={this.state.graph}
+                options={this.options}
+                events={this.events}
+                getEdges={this.getEdges}
+                getNodes={this.getNodes}
+                vis={(vis) => (this.vis = vis)}
+              />
+            )}
           </div>
         </Grid>
         <NodeStat SelectedNodes={this.state.selectNode} />

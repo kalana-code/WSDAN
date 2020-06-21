@@ -9,10 +9,9 @@ import {
   InputGroup,
   Button,
   Callout,
-
 } from "@blueprintjs/core";
 
-import config from './../../config/config'
+import config from "./../../config/config";
 class RuleInsertForm extends Component {
   state = {
     destinationMac: [],
@@ -80,22 +79,22 @@ class RuleInsertForm extends Component {
     }
 
     if (this.state.DstMAC === "") {
-        Error.DstMAC = true;
-        ErrorMessage.DstMAC = "DstMAC cannot be empty";
-      }
+      Error.DstMAC = true;
+      ErrorMessage.DstMAC = "DstMAC cannot be empty";
+    }
     if (this.state.DstMAC === null) {
-        Error.DstMAC = true;
-        ErrorMessage.DstMAC = "DstIP cannot be empty";
+      Error.DstMAC = true;
+      ErrorMessage.DstMAC = "DstIP cannot be empty";
     }
 
     if (this.state.Interface === "") {
-        Error.Interface = true;
-        ErrorMessage.Interface = "Interface cannot be empty";
+      Error.Interface = true;
+      ErrorMessage.Interface = "Interface cannot be empty";
     }
 
     if (this.state.Protocol === "") {
-        Error.Protocol = true;
-        ErrorMessage.Protocol = "Protocol cannot be empty";
+      Error.Protocol = true;
+      ErrorMessage.Protocol = "Protocol cannot be empty";
     }
     if (
       !this.state.DstIP.match(
@@ -139,27 +138,30 @@ class RuleInsertForm extends Component {
     // Submit Data
     if (isValid) {
       const Request_Body = {
-        NodeIP: this.props.SelectedNodes[this.props.SelectedNodes.length - 1].NodeData.Node.IP,
+        NodeIP: this.props.SelectedNodes[this.props.SelectedNodes.length - 1]
+          .NodeData.Node.IP,
+        NodeName: this.props.SelectedNodes[this.props.SelectedNodes.length - 1]
+          .NodeData.Node.Name,
         FlowID: this.state.FlowID,
         Protocol: this.state.Protocol,
         DstIP: this.state.DstIP,
         Interface: this.state.Interface,
         DstMAC: this.state.DstMAC,
-        Action: this.state.Action, 
+        Action: this.state.Action,
       };
       this.setState({ isLoading: true });
-      axios.post(`http://`+config.host+`:8081/AddRule`, Request_Body).then(
+      axios.post(`http://` + config.host + `:8081/AddRule`, Request_Body).then(
         (response) => {
           if (response.status === 200) {
             this.setState({ isLoading: false });
-            this.props.getRuleData()
+            this.props.getRuleData();
           }
         },
         (error) => {
           this.setState({ isLoading: false });
         }
       );
-      this.props.toggleDrawer()
+      this.props.toggleDrawer();
       this.setState({
         destinationMac: [],
         isLoading: false,
@@ -184,22 +186,34 @@ class RuleInsertForm extends Component {
           DstIP: "",
           Interface: "",
           DstMAC: "",
-        }
-      })
+        },
+      });
     }
   };
 
   render() {
     let NodeIP = "";
-    let NeighboursMac =[]
+    let NeighboursMac = [];
     if (this.props.SelectedNodes.length > 0) {
-      NodeIP = this.props.SelectedNodes[this.props.SelectedNodes.length - 1].NodeData.Node.IP
-      let a= this.props.SelectedNodes[this.props.SelectedNodes.length - 1].NodeData.Neighbours
-      if(a!==null){
-        NeighboursMac.push(<option  key={0} value=""> --Select DstMAC--</option>)
-        for(let i = 0;i<a.length;i++){
-            console.log(a[i])
-            NeighboursMac.push(<option key ={i+1} value={a[i].MAC}>{a[i].MAC}</option>)
+      NodeIP = this.props.SelectedNodes[this.props.SelectedNodes.length - 1]
+        .NodeData.Node.IP;
+      let a = this.props.SelectedNodes[this.props.SelectedNodes.length - 1]
+        .NodeData.Neighbours;
+      if (a !== null) {
+        NeighboursMac.push(
+          <option key={0} value="">
+            {" "}
+            --Select DstMAC--
+          </option>
+        );
+        for (let i = 0; i < a.length; i++) {
+          if (this.props.nodeNames[a[i].MAC] != null) {
+            NeighboursMac.push(
+              <option key={i + 1} value={a[i].MAC}>
+                {this.props.nodeNames[a[i].MAC]}
+              </option>
+            );
+          }
         }
       }
     }
@@ -230,9 +244,7 @@ class RuleInsertForm extends Component {
                       intent={this.getIntent("FlowID")}
                     >
                       <option value="">--select a flow id--</option>
-                      <option value="F0">
-                        Flow 00
-                      </option>
+                      <option value="F0">Flow 00</option>
                       <option value="F1">Flow 01</option>
                       <option value="F2">Flow 01</option>
                     </select>
@@ -251,11 +263,9 @@ class RuleInsertForm extends Component {
                       value={this.state.Protocol}
                       intent={this.getIntent("Protocol")}
                     >
-                    <option value="">--select protocol--</option>
+                      <option value="">--select protocol--</option>
                       <option value="ICMPv4">ICMP Protocol</option>
-                      <option value="UDP">
-                        UDP Protocol
-                      </option>
+                      <option value="UDP">UDP Protocol</option>
                       {/* <option value="">UPD Protocol</option> */}
                     </select>
                   </div>
@@ -273,7 +283,7 @@ class RuleInsertForm extends Component {
                       value={this.state.Interface}
                       intent={this.getIntent("Interface")}
                     >
-                    <option value="">--select interface--</option>
+                      <option value="">--select interface--</option>
                       <option value="wlan0">WLAN0</option>
                     </select>
                   </div>
@@ -293,25 +303,6 @@ class RuleInsertForm extends Component {
                   />
                 </FormGroup>
 
-                <Callout title={"Note"} icon={"info-sign"} intent={"success"}>
-                  Message About Project .
-                </Callout>
-                <FormGroup
-                  helperText={this.state.ErrorMessage.DstMAC}
-                  label="Destination MAC address"
-                  intent={this.getIntent("DstMAC")}
-                >
-                  <div className="bp3-select">
-                    <select
-                      name="DstMAC"
-                      onChange={this.handleChange}
-                      value={this.state.DstMAC}
-                      intent={this.getIntent("DstMAC")}
-                    >
-                      {NeighboursMac}
-                    </select>
-                  </div>
-                </FormGroup>
                 <Callout
                   title={"What is Action"}
                   icon={"info-sign"}
@@ -335,9 +326,30 @@ class RuleInsertForm extends Component {
                     </select>
                   </div>
                 </FormGroup>
+                <Callout title={"Note"} icon={"info-sign"} intent={"success"}>
+                  Message About Project .
+                </Callout>
+                {this.state.Action != "DROP" && (
+                  <FormGroup
+                    helperText={this.state.ErrorMessage.DstMAC}
+                    label="Destination MAC address"
+                    intent={this.getIntent("DstMAC")}
+                  >
+                    <div className="bp3-select">
+                      <select
+                        name="DstMAC"
+                        onChange={this.handleChange}
+                        value={this.state.DstMAC}
+                        intent={this.getIntent("DstMAC")}
+                      >
+                        {NeighboursMac}
+                      </select>
+                    </div>
+                  </FormGroup>
+                )}
               </div>
             ) : (
-                <Callout title={"Note"} icon={"error"} intent={"danger"}>
+              <Callout title={"Note"} icon={"error"} intent={"danger"}>
                 You selected node is being configured.
               </Callout>
             )}
@@ -345,16 +357,17 @@ class RuleInsertForm extends Component {
         </div>
 
         <div className={Classes.DRAWER_FOOTER}>
-            {NodeIP !== ""&&<FormGroup>
-            <Button
-              
-              intent="primary"
-              text="Add Rule"
-              onClick={this.DataSubmit}
-              disabled={false}
-              loading={this.state.isLoading}
-            />
-          </FormGroup>}
+          {NodeIP !== "" && (
+            <FormGroup>
+              <Button
+                intent="primary"
+                text="Add Rule"
+                onClick={this.DataSubmit}
+                disabled={false}
+                loading={this.state.isLoading}
+              />
+            </FormGroup>
+          )}
         </div>
       </Drawer>
     );

@@ -18,7 +18,7 @@ const (
 	//Port used to define Port of rule endpoint
 	Port = "8082"
 	//RemoveRuleEndPoint used to define remove rule endpoint
-	RemoveRuleEndPoint = "endpoint"
+	RemoveRuleEndPoint = "RemoveFlowRule"
 	//AddRuleEndPoint used to define add rule endpoint
 	AddRuleEndPoint = "AddFlowRule"
 )
@@ -43,5 +43,5 @@ type AddRuleJob struct {
 	DstIP     string `json:"DstIP"`
 	Interface string `json:"Interface"`
 	DstMAC    string `json:"DstMAC"`
-	Action    string `json:"DstMAC"`
+	Action    string `json:"Action"`
 }

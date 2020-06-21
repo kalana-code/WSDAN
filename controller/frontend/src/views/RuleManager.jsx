@@ -16,8 +16,9 @@ class RuleManager extends Component {
     graph: {
       nodes: [],
       tempNode: [],
-      edges: [],
+      edges: []
     },
+    NodeNames:null,
     noNode: true,
     selectNode: [],
     selectCount: 0, // used for select two nodes
@@ -78,8 +79,6 @@ class RuleManager extends Component {
       },
     },
     groups: {
-      
-      
       AP: {
         shape: "icon",
         icon: {
@@ -97,30 +96,35 @@ class RuleManager extends Component {
           size: 40,
           color: "#A7B6C2",
         },
-      }
+      },
+      Controller: {
+        shape: "icon",
+        icon: {
+          face: "FontAwesome",
+          code: "\uf20e",
+          size: 40,
+          color: "#5C255C",
+        },
+      },
     },
     height: "400px",
     layout: {
       randomSeed: 55,
     },
     physics: {
-      enabled: true,
-      // forceAtlas2Based: {
-      //   gravitationalConstant: -26,
-      //   centralGravity: 0.005,
-      //   springLength: 3000,
-      //   springConstant: 0.18
-      // },
-      // maxVelocity: 146,
-      // solver: "forceAtlas2Based",
-      // timestep: 0.35,
-      // stabilization: {
-      //   enabled: true,
-      //   iterations: 20,
-      //   updateInterval: 25
-      // }
+      forceAtlas2Based: {
+        gravitationalConstant: -26,
+        centralGravity: 0.005,
+        springLength: 230,
+        springConstant: 0.18,
+      },
+      maxVelocity: 146,
+      solver: "forceAtlas2Based",
+      timestep: 0.35,
+      stabilization: { iterations: 150 },
     },
   };
+
 
   getData = () => {
     axios.get(`http://` + config.host + `:8081/GetNodeInfo`).then(
@@ -129,6 +133,7 @@ class RuleManager extends Component {
           if (response.data.Data.graphData.nodes.length > 0) {
             this.setState({
               graph: response.data.Data.graphData,
+              NodeNames:response.data.Data.nodeNames
             });
             this.setState({ noNode: false });
           } else {
@@ -160,15 +165,6 @@ class RuleManager extends Component {
     // }
   }
 
-  // we have  clear time interval
-  // componentWillUnmount = () => {             // ***
-  //   // Is our timer running?                 // ***
-  //   if (this.timerHandle) {                  // ***
-  //       // Yes, clear it                     // ***
-  //       clearInterval(this.timerHandle);      // ***
-  //       this.timerHandle = 0;                // ***
-  //   }                                        // ***
-  // };
   getNodeData = (NodeID) => {
     for (var key in this.state.graph.nodes) {
       var obj = this.state.graph.nodes[key];
@@ -216,7 +212,7 @@ class RuleManager extends Component {
             />
           </div>
         </Grid>
-        <RuleConfig SelectedNodes={this.state.selectNode} />
+        <RuleConfig SelectedNodes={this.state.selectNode} nodeNames={this.state.NodeNames} />
       </div>
     );
   }

@@ -4,4 +4,6 @@ package model
 type Settings struct {
 	Automation    bool // this used for rule handle
 	ForceDispurse bool
+	MacAddress    string
+	IPAddress     string
 }

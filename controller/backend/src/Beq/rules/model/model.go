@@ -20,6 +20,7 @@ type RulesDataRow struct {
 	Interface string
 	DstMAC    string
 	NodeIP    string
+	NodeName  string
 	IsSet     bool
 	Action    string
 }
@@ -33,6 +34,7 @@ type Rule struct {
 	Interface string `json:"Interface"`
 	DstMAC    string `json:"DstMAC"`
 	NodeIP    string `json:"NodeIP"`
+	NodeName  string `json:"Name"`
 	Action    string `json:"Action"`
 }
 
@@ -46,6 +48,7 @@ func (obj *Rule) Populate(RuleID string, data RulesDataRow) {
 	obj.Interface = data.Interface
 	obj.NodeIP = data.NodeIP
 	obj.Action = data.Action
+	obj.NodeName = data.NodeName
 }
 
 //StateRequest is used for request node state
