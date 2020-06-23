@@ -13,13 +13,44 @@ import (
 	"strconv"
 )
 
+// ControllerMAC is used to store controller MAC
+type ControllerMAC struct {
+	MAC string `json:"MAC"`
+}
+
 var (
-	controllerIP string = "192.168.0.4"
-	port         string = "8081"
-	endPoint     string = "AddNodeInfo"
-	infoLog      string = "INFO: [CL]:"
-	errorLog     string = "ERROR: [CL]:"
+	controllerIP             string = "192.168.0.4"
+	port                     string = "8081"
+	endPoint                 string = "AddNodeInfo"
+	endPointGetControllerMAC string = "GetControllerMAC"
+	infoLog                  string = "INFO: [CL]:"
+	errorLog                 string = "ERROR: [CL]:"
+	data                     ControllerMAC
 )
+
+// GetControllerMAC is used to get Controller MAC address
+func GetControllerMAC() (string, error) {
+	log.Println(infoLog, "Get Controller MAC")
+	getMACUrl := "http://" + controllerIP + ":" + port + "/" + endPointGetControllerMAC
+	resp, err := http.Get(getMACUrl)
+	if err != nil {
+		log.Println(errorLog, "The HTTP request(Get Controller MAC) failed with error", err)
+		return "", err
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Println(errorLog, "GetControllerMAC: Error in reading response", err)
+		return "", err
+	}
+	log.Println(infoLog, "GetControllerMAC: Response Data:", string(body))
+	jsonErr := json.Unmarshal(body, &data)
+	if jsonErr != nil {
+		log.Println(errorLog, "GetControllerMAC: JSON Error:", jsonErr)
+		return "", jsonErr
+	}
+	return data.MAC, nil
+}
 
 // SendNodeData is used to send node data to the controller
 func SendNodeData(nodeName string, nodeGroup string) {
@@ -43,7 +74,7 @@ func SendNodeData(nodeName string, nodeGroup string) {
 		dataSendingURL := "http://" + controllerIP + ":" + port + "/" + endPoint
 		response, err := http.Post(dataSendingURL, "application/json", bytes.NewBuffer(jsonValue))
 		if err != nil {
-			log.Println(errorLog, "The HTTP request failed with error", err)
+			log.Println(errorLog, "The HTTP request(Send Node Data) failed with error", err)
 		} else {
 			data, _ := ioutil.ReadAll(response.Body)
 			log.Println(infoLog, "Response Data:", string(data))

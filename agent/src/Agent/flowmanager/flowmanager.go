@@ -1,6 +1,7 @@
 package flowmanager
 
 import (
+	"Agent/config"
 	"Agent/database"
 	"log"
 )
@@ -37,18 +38,10 @@ type RuleState struct {
 }
 
 var (
-	defaultRule = database.RuleConfiguration{
-		DstIP:     "any",
-		SrcIP:     "any",
-		Protocol:  "any",
-		FlowID:    "default",
-		Interface: "wlan0",
-		DstMAC:    "b8:27:eb:9a:5e:a5",
-		Action:    "ACCEPT",
-		IsActive:  true,
-	}
-	infoLog  string = "INFO: [FM]:"
-	errorLog string = "ERROR: [FM]:"
+	err           error
+	controllerMAC string
+	infoLog       string = "INFO: [FM]:"
+	errorLog      string = "ERROR: [FM]:"
 )
 
 // RuleChecker is used to check the availablity of a rule
@@ -63,6 +56,18 @@ func RuleChecker(packetDetails PacketDetails) database.RuleConfiguration {
 		}
 	}
 	log.Println(infoLog, "Default rule is set(Sending to the controller)")
+	settings := config.GetSettings()
+	controllerMAC, err = settings.GetControllerMAC()
+	defaultRule := database.RuleConfiguration{
+		DstIP:     "any",
+		SrcIP:     "any",
+		Protocol:  "any",
+		FlowID:    "default",
+		Interface: "wlan0",
+		DstMAC:    controllerMAC,
+		Action:    "ACCEPT",
+		IsActive:  true,
+	}
 	return defaultRule
 }
 

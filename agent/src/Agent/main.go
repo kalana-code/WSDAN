@@ -2,6 +2,7 @@ package main
 
 import (
 	"Agent/client"
+	"Agent/config"
 	"Agent/initializer"
 	"Agent/packethandler"
 	"Agent/server"
@@ -17,17 +18,18 @@ import (
 )
 
 var (
-	device      string = "wlan0"
-	snapshotLen int32  = 1024
-	promiscuous bool   = false
-	err         error
-	handle      *pcap.Handle
-	timeout     time.Duration = 1 * time.Second
-	buffer      gopacket.SerializeBuffer
-	infoLog     string = "INFO: [MN]:"
-	errorLog    string = "ERROR: [MN]:"
-	nodeName    string
-	nodeGroup   string
+	device        string = "wlan0"
+	snapshotLen   int32  = 1024
+	promiscuous   bool   = false
+	err           error
+	handle        *pcap.Handle
+	timeout       time.Duration = 1 * time.Second
+	buffer        gopacket.SerializeBuffer
+	infoLog       string = "INFO: [MN]:"
+	errorLog      string = "ERROR: [MN]:"
+	nodeName      string
+	nodeGroup     string
+	controllerMAC string
 )
 
 func main() {
@@ -39,6 +41,16 @@ func main() {
 	err = initializer.IptableInitializer()
 	if err != nil {
 		log.Println(errorLog, "Error when initializing iptables:", err)
+	}
+	controllerMAC, err = client.GetControllerMAC()
+	if err != nil {
+		log.Println(errorLog, "Error when retrieving controller MAC:", err)
+		os.Exit(1)
+	}
+	settings := config.GetSettings()
+	err = settings.SetControllerMAC(controllerMAC)
+	if err != nil {
+		log.Println(errorLog, "Error when setting controller MAC", err)
 	}
 	client.SendNodeData(nodeName, nodeGroup)
 	go doEvery(func() { client.SendNodeData(nodeName, nodeGroup) }, 300000*time.Millisecond)
