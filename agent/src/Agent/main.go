@@ -48,6 +48,7 @@ func main() {
 		os.Exit(1)
 	}
 	settings := config.GetSettings()
+	log.Println(infoLog, "Controller MAC : ", controllerMAC)
 	err = settings.SetControllerMAC(controllerMAC)
 	if err != nil {
 		log.Println(errorLog, "Error when setting controller MAC", err)
