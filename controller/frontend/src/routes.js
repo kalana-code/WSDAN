@@ -3,6 +3,7 @@
 import Home from "views/Home.jsx";
 import RuleManager from "views/RuleManager.jsx";
 import Network from "views/Network.jsx";
+import FlowManager from "views/FlowManager.jsx"
 import Settings from "views/Settings.jsx";
 
 export const adminRoute = [
@@ -25,6 +26,14 @@ export const adminRoute = [
     name: "Rule Manager",
     icon: "pe-7s-photo-gallery",
     component: RuleManager,
+    layout: "/admin"
+   },
+
+   {
+    path: "/flowManager",
+    name: "Flow Manager",
+    icon: "pe-7s-photo-gallery",
+    component: FlowManager,
     layout: "/admin"
    },
    

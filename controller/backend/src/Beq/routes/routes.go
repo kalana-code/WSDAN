@@ -20,6 +20,7 @@ func Handlers() *mux.Router {
 	//GET
 	r.HandleFunc("/Info", genaral.Information).Methods("GET", "OPTIONS")
 	r.HandleFunc("/GetNodeInfo", nodeService.GetNodeInfo).Methods("GET", "OPTIONS")
+	r.HandleFunc("/GetNodeInfoWithFlowHighlight", nodeService.GetNodeInfoWithFlowHighlight).Methods("GET", "OPTIONS")
 	//POST
 	r.HandleFunc("/AddNodeInfo", nodeService.AddNodeInfo).Methods("POST", "OPTIONS")
 
@@ -27,13 +28,18 @@ func Handlers() *mux.Router {
 	r.HandleFunc("/AddRule", ruleService.AddRule).Methods("POST", "OPTIONS")
 	r.HandleFunc("/RemoveFlow/{FlowID}", ruleService.RemoveRulesByFlowID).Methods("GET", "OPTIONS")
 	r.HandleFunc("/RemoveRule/{RuleID}", ruleService.RemoveRuleByRuleID).Methods("GET", "OPTIONS")
+	r.HandleFunc("/ChangeStateByRuleID/{RuleID}", ruleService.ChangeStateByRuleID).Methods("GET", "OPTIONS")
 	r.HandleFunc("/GetAllRules", ruleService.GetAllRules).Methods("GET", "OPTIONS")
+	r.HandleFunc("/GetFlowData", ruleService.GetFlowData).Methods("GET", "OPTIONS")
 	// r.HandleFunc("/GetRulesInFlow", ruleService.AddRule).Methods("POST", "OPTIONS")
 
 	//System setting handling APIs
 	r.HandleFunc("/StateToggle", settingService.Toggle).Methods("GET", "OPTIONS")
 	r.HandleFunc("/StateToggleForceDispurser", settingService.ToggleForceDispurserMode).Methods("GET", "OPTIONS")
+
 	r.HandleFunc("/SystemSetting", settingService.GetCurrentSetting).Methods("GET", "OPTIONS")
+	r.HandleFunc("/GetControllerMac", settingService.GetControllerMac).Methods("GET", "OPTIONS")
+
 	// user registrarion
 	// r.HandleFunc("/Register/Student", genaral.Register).Methods("POST", "OPTIONS")
 	r.HandleFunc("/User/Login", genaral.Login).Methods("POST", "OPTIONS")

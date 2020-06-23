@@ -3,7 +3,8 @@ package main
 import (
 	"Beq/api/genaral/model"
 	"Beq/api/genaral/utils"
-	dispurserQueue "Beq/dispurser/db"
+
+	jobQueue "Beq/dispurser/db"
 	setting "Beq/settings/db"
 	"net"
 	"strings"
@@ -60,7 +61,7 @@ func packetHandler() {
 	packethandler.PacketController()
 }
 
-func requestDispurser(task *dispurserQueue.JobQueue) {
+func requestDispurser(task *jobQueue.JobQueue) {
 
 	log.Println("INFO: [RD]: Request Dispurser Is Activeted")
 	for {
@@ -71,7 +72,7 @@ func requestDispurser(task *dispurserQueue.JobQueue) {
 
 func main() {
 	log.Println("INFO: [CO]: Controller -- ")
-	queue := dispurserQueue.GetRequestQueue()
+	queue := jobQueue.GetRequestQueue()
 	setting := setting.GetSystemSetting()
 
 	err := packethandlerUtil.IptableInitializer()

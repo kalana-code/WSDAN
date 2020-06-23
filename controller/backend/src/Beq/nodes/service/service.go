@@ -75,3 +75,34 @@ func GetNodeInfo(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(resp)
 
 }
+
+// GetNodeInfoWithFlowHighlight for genarate information required for Network Topology graph
+func GetNodeInfoWithFlowHighlight(w http.ResponseWriter, r *http.Request) {
+	if (*r).Method == "OPTIONS" {
+		return
+	}
+	neighbourMap := db.GetDataBase()
+	resp := model.Response{}
+	// set Default value
+	resp.Default()
+
+	NodeNameMap, GraphData, err := neighbourMap.GenarateNetworkTopologyWithFlowHighlight()
+
+	if err != nil {
+		log.Println("ERROR: Payload Error", err)
+		resp.InternalServerError()
+		w.WriteHeader(http.StatusBadRequest)
+	} else {
+		data := make(map[string]interface{})
+		data["graphData"] = GraphData
+		data["nodeNames"] = NodeNameMap
+
+		resp.Code = http.StatusOK
+		resp.Message = "Updated time: "
+		resp.Data = data
+		w.WriteHeader(http.StatusOK)
+
+	}
+	json.NewEncoder(w).Encode(resp)
+
+}

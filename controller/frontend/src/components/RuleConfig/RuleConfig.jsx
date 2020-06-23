@@ -24,6 +24,7 @@ class RuleConfig extends Component {
       navbarTabId: "rs",
       isOpen: false,
       CurrentRules: [],
+      controllerMAC:null
     };
   }
 
@@ -129,7 +130,19 @@ class RuleConfig extends Component {
       }
     });
   }
+
+  getSetting=()=>{
+    axios.get(`http://`+config.host+`:8081/SystemSetting`).then((res) => {
+      if (res.status === 200) {
+        console.log(res.data.Data)
+        this.setState({
+          controllerMAC: res.data.Data.MAC,
+        });
+      }
+    });
+  }
   componentDidMount = () => {
+    this.getSetting()
     this.getData()
   };
   render() {
@@ -164,7 +177,7 @@ const RulesPanel = (props) => (
     <div>
       <ButtonGroup minimal={true}>
         <Button
-          disabled={props.SelectedNodes.length < 1}
+          disabled={props.SelectedNodes.length < 1 && props.controllerMAC !=null}
           icon="add"
           onClick={props.toggleDrawer}
         >

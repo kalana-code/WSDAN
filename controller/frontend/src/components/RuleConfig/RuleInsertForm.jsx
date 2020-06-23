@@ -17,9 +17,13 @@ class RuleInsertForm extends Component {
     destinationMac: [],
     isLoading: false,
     isDisable: false,
+    FlowData:null,
+    disableIPfield:false,
+    IPfieldLoading:false,
     NodeIP: "",
     FlowID: "",
     Protocol: "",
+    SrcIP:"",
     DstIP: "",
     Interface: "",
     DstMAC: "",
@@ -27,6 +31,7 @@ class RuleInsertForm extends Component {
     Error: {
       NodeIP: false,
       FlowID: false,
+      SrcIP:false,
       DstIP: false,
       Interface: false,
       DstMAC: false,
@@ -34,6 +39,7 @@ class RuleInsertForm extends Component {
     ErrorMessage: {
       NodeIP: "",
       FlowID: "",
+      SrcIP:"",
       DstIP: "",
       Interface: "",
       DstMAC: "",
@@ -43,16 +49,33 @@ class RuleInsertForm extends Component {
   // handle Functions
   handleChange = (event) => {
     const { name, value } = event.target;
-    this.setState({ [name]: value }, () => this.Verify());
-    console.log(this.state);
+    if (name === "FlowID"){
+        if(this.state.FlowData[value]!=undefined){
+          this.setState({
+            SrcIP:this.state.FlowData[value].SrcIP,
+            DstIP:this.state.FlowData[value].DstIP,
+            disableIPfield:true
+          })
+        }else{
+          this.setState({
+            SrcIP:"",
+            DstIP: "",
+            disableIPfield:false
+          })
+        }
+    }
+    this.setState({ [name]: value });
   };
+isEmpty=(str)=> {
+    return (!str || 0 === str.length);
+}
 
-  Verify = () => {
-    console.log(this.state);
+  VerifyAndSubmit = () => {
     let Error = {
       NodeIP: false,
       FlowID: false,
       DstIP: false,
+      SrcIP:false,
       Interface: false,
       DstMAC: false,
     };
@@ -60,39 +83,32 @@ class RuleInsertForm extends Component {
       NodeIP: "",
       FlowID: "",
       DstIP: "",
+      SrcIP:"",
       Interface: "",
       DstMAC: "",
     };
 
-    //Check Email
-    if (this.state.NodeIP === "") {
-      Error.NodeIP = true;
-      ErrorMessage.NodeIP = "NodeIP cannot be empty";
-    }
-    if (this.state.FlowID === "") {
+    if (this.isEmpty(this.state.FlowID)) {
       Error.FlowID = true;
       ErrorMessage.FlowID = "FlowID cannot be empty";
     }
-    if (this.state.DstIP === "") {
+    if (this.isEmpty(this.state.DstIP)) {
       Error.DstIP = true;
       ErrorMessage.DstIP = "DstIP cannot be empty";
     }
 
-    if (this.state.DstMAC === "") {
+    if (this.isEmpty(this.state.DstMAC) && this.state.Action !=="DROP" ) {
       Error.DstMAC = true;
       ErrorMessage.DstMAC = "DstMAC cannot be empty";
     }
-    if (this.state.DstMAC === null) {
-      Error.DstMAC = true;
-      ErrorMessage.DstMAC = "DstIP cannot be empty";
-    }
+   
 
-    if (this.state.Interface === "") {
+    if (this.isEmpty(this.state.Interface)) {
       Error.Interface = true;
       ErrorMessage.Interface = "Interface cannot be empty";
     }
 
-    if (this.state.Protocol === "") {
+    if (this.isEmpty(this.state.Protocol)) {
       Error.Protocol = true;
       ErrorMessage.Protocol = "Protocol cannot be empty";
     }
@@ -104,13 +120,21 @@ class RuleInsertForm extends Component {
       Error.DstIP = true;
       ErrorMessage.DstIP = "Invalid IP4 Address";
     }
-    if (this.state.Interface === "") {
-      Error.Interface = true;
-      ErrorMessage.Interface = "Interface cannot be empty";
-    }
+
+    if (
+      !this.state.SrcIP.match(
+        "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+      )
+    ) {
+      Error.SrcIP = true;
+      ErrorMessage.SrcIP = "Invalid IP4 Address";
+    } 
+    console.log(Error)
 
     // set State
-    this.setState({ Error: Error, ErrorMessage: ErrorMessage });
+    this.setState({ Error: Error, ErrorMessage: ErrorMessage },()=>{
+      this.DataSubmit()
+    });
   };
 
   // get intent
@@ -123,18 +147,18 @@ class RuleInsertForm extends Component {
 
   //Send Request
   DataSubmit = () => {
-    this.Verify();
-    let isValid = true;
-    //check form input errors
-    Object.keys(this.state.Error).map(
-      (value) =>
-        function () {
-          if (this.state.Error[value]) {
-            isValid = false;
-          }
-        }
-    );
 
+    let isValid = true;
+    console.log(this.state.Error)
+    for (const property in this.state.Error) {
+      console.log(this.state.Error[property])
+       if(this.state.Error[property] ===  true){
+        isValid = false;
+        break
+       }
+    }
+    
+    console.log(isValid)
     // Submit Data
     if (isValid) {
       const Request_Body = {
@@ -144,10 +168,12 @@ class RuleInsertForm extends Component {
           .NodeData.Node.Name,
         FlowID: this.state.FlowID,
         Protocol: this.state.Protocol,
+        ScrIP: this.state.ScrIP,
         DstIP: this.state.DstIP,
         Interface: this.state.Interface,
         DstMAC: this.state.DstMAC,
         Action: this.state.Action,
+        IsActive : true
       };
       this.setState({ isLoading: true });
       axios.post(`http://` + config.host + `:8081/AddRule`, Request_Body).then(
@@ -167,6 +193,7 @@ class RuleInsertForm extends Component {
         isLoading: false,
         isDisable: false,
         NodeIP: "",
+        SrcMAC: "",
         FlowID: "",
         Protocol: "",
         DstIP: "",
@@ -176,12 +203,14 @@ class RuleInsertForm extends Component {
         Error: {
           NodeIP: false,
           FlowID: false,
+          SrcMAC:false,
           DstIP: false,
           Interface: false,
           DstMAC: false,
         },
         ErrorMessage: {
           NodeIP: "",
+          SrcMAC:"",
           FlowID: "",
           DstIP: "",
           Interface: "",
@@ -190,6 +219,17 @@ class RuleInsertForm extends Component {
       });
     }
   };
+
+  GetFlowData=()=>{
+    axios.get(`http://`+config.host+`:8081/GetFlowData`).then((res) => {
+      if (res.status === 200) {
+        console.log(res.data.Data.FlowData)
+        this.setState({
+          FlowData: res.data.Data.FlowData,
+        });
+      }
+    });
+  }
 
   render() {
     let NodeIP = "";
@@ -207,7 +247,8 @@ class RuleInsertForm extends Component {
           </option>
         );
         for (let i = 0; i < a.length; i++) {
-          if (this.props.nodeNames[a[i].MAC] != null) {
+          console.log(a)
+          if (this.props.nodeNames[a[i].MAC] != null && a[i].MAC!=this.props.contrllerMAC) {
             NeighboursMac.push(
               <option key={i + 1} value={a[i].MAC}>
                 {this.props.nodeNames[a[i].MAC]}
@@ -222,6 +263,7 @@ class RuleInsertForm extends Component {
       <Drawer
         icon="info-sign"
         onClose={this.props.toggleDrawer}
+        onOpening={this.GetFlowData}
         title="Rule Insert"
         isOpen={this.props.isOpen}
       >
@@ -235,6 +277,7 @@ class RuleInsertForm extends Component {
                 <FormGroup
                   helperText={this.state.ErrorMessage.FlowID}
                   label="Flow ID"
+                  intent={this.getIntent("FlowID")}
                 >
                   <div className="bp3-select">
                     <select
@@ -246,7 +289,13 @@ class RuleInsertForm extends Component {
                       <option value="">--select a flow id--</option>
                       <option value="F0">Flow 00</option>
                       <option value="F1">Flow 01</option>
-                      <option value="F2">Flow 01</option>
+                      <option value="F2">Flow 02</option>
+                      <option value="F3">Flow 03</option>
+                      <option value="F4">Flow 04</option>
+                      <option value="F5">Flow 05</option>
+                      <option value="F6">Flow 06</option>
+                      <option value="F7">Flow 07</option>
+                      <option value="F8">Flow 08</option>
                     </select>
                   </div>
                 </FormGroup>
@@ -289,12 +338,30 @@ class RuleInsertForm extends Component {
                   </div>
                 </FormGroup>
                 <FormGroup
+                  helperText={this.state.ErrorMessage.SrcIP}
+                  label="Source IP address"
+                  intent={this.getIntent("SrcIP")}
+                  disabled={this.state.disableIPfield}
+                >
+                  <InputGroup
+                    name="SrcIP"
+                    disabled={this.state.disableIPfield}
+                    onChange={this.handleChange}
+                    value={this.state.SrcIP}
+                    id="text-input"
+                    placeholder="192.168.3.2"
+                    intent={this.getIntent("ScrIP")}
+                  />
+                </FormGroup>
+                <FormGroup
                   helperText={this.state.ErrorMessage.DstIP}
                   label="Destination IP address"
                   intent={this.getIntent("DstIP")}
+                  disabled={this.state.disableIPfield}
                 >
                   <InputGroup
                     name="DstIP"
+                    disabled={this.state.disableIPfield}
                     onChange={this.handleChange}
                     value={this.state.DstIP}
                     id="text-input"
@@ -332,9 +399,9 @@ class RuleInsertForm extends Component {
                 {this.state.Action != "DROP" && (
                   <FormGroup
                     helperText={this.state.ErrorMessage.DstMAC}
-                    label="Destination MAC address"
+                    label="Next Node"
                     intent={this.getIntent("DstMAC")}
-                  >
+                  >               
                     <div className="bp3-select">
                       <select
                         name="DstMAC"
@@ -362,7 +429,7 @@ class RuleInsertForm extends Component {
               <Button
                 intent="primary"
                 text="Add Rule"
-                onClick={this.DataSubmit}
+                onClick={this.VerifyAndSubmit}
                 disabled={false}
                 loading={this.state.isLoading}
               />
