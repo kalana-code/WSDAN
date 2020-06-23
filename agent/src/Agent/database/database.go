@@ -15,12 +15,14 @@ var (
 
 // RuleConfiguration is used to store data in the node database
 type RuleConfiguration struct {
+	SrcIP     string `json:"SrcIP"`
 	DstIP     string `json:"DstIP"`
 	Protocol  string `json:"Protocol"`
 	FlowID    string `json:"FlowID"`
 	Interface string `json:"Interface"`
 	DstMAC    string `json:"DstMAC"`
 	Action    string `json:"Action"`
+	IsActive  bool   `json:"IsActive"`
 }
 
 // GetDatabase is used to get one instance of the db
@@ -53,4 +55,16 @@ func DeleteRule(key string) {
 	log.Println(infoLog, "Invoke DeleteRule")
 	db := GetDatabase()
 	delete(db, key)
+}
+
+// SetRuleState is used to set the state of a rule
+func SetRuleState(key string, isActive bool) bool {
+	log.Println(infoLog, "Invoke SetRuleState")
+	db := GetDatabase()
+	if rule, found := db[key]; found {
+		rule.IsActive = isActive
+		db[key] = rule
+		return true
+	}
+	return false
 }

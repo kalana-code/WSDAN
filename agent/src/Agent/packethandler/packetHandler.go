@@ -31,6 +31,7 @@ func PacketAnalyzer(packet gopacket.Packet) gopacket.SerializeBuffer {
 		log.Println(infoLog, "IPv4 layer detected.")
 		ipl, _ = ipLayer.(*layers.IPv4)
 		packetDetails.DstIP = ipl.DstIP.String()
+		packetDetails.SrcIP = ipl.SrcIP.String()
 		packetDetails.Protocol = ipl.Protocol.String()
 	}
 	udpLayer := packet.Layer(layers.LayerTypeUDP)
