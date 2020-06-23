@@ -158,8 +158,6 @@ func (*RuleDB) RemoveRulesByFlowID(FlowID string) (string, error) {
 	return "", errors.New("No Data Base Initiate")
 }
 
-
-
 //GetAllRules used for remove Rule by RuleID
 func (*RuleDB) GetAllRules() (*[]model.Rule, error) {
 	rules := []model.Rule{}

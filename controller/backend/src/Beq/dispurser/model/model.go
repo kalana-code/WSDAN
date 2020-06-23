@@ -49,8 +49,10 @@ type AddRuleJob struct {
 	RuleID    string `json:"RuleId"`
 	Protocol  string `json:"Protocol"`
 	FlowID    string `json:"FlowId"`
+	SrcIP     string `json:"SrcIP"`
 	DstIP     string `json:"DstIP"`
 	Interface string `json:"Interface"`
 	DstMAC    string `json:"DstMAC"`
 	Action    string `json:"Action"`
+	IsActive  bool   `json:"IsActive"`
 }

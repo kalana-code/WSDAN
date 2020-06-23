@@ -146,10 +146,12 @@ func DispurseFlow(flowID string) {
 			RuleID:    flow.RuleID,
 			Protocol:  flow.Protocol,
 			FlowID:    flow.FlowID,
+			SrcIP:     flow.SrcIP,
 			DstIP:     flow.DstIP,
 			Interface: flow.Interface,
 			DstMAC:    flow.DstMAC,
 			Action:    flow.Action,
+			IsActive:  flow.IsActive,
 		}
 		dispureFlow := dispurseModel.Job{
 			Type:        dispurseModel.TypeAddRule,
