@@ -11,9 +11,9 @@ import "./style/network/css/network-manipulation.css";
 
 import { Grid } from "react-bootstrap";
 import NodeStat from "components/NodeStat/NodeStat.jsx";
-import config from "./../config/config";
+import config from "../config/config";
 
-class Network extends Component {
+class FlowManager extends Component {
   state = {
     graph: {
       nodes: [],
@@ -180,7 +180,25 @@ class Network extends Component {
     }
   };
 
-  
+  changeColor=()=>{
+   
+    axios.get(`http://` + config.host + `:8081/GetNodeInfoWithFlowHighlight`).then(
+      (response) => {
+        if (response.status === 200) {
+          if (response.data.Data.graphData.nodes.length > 0) {
+            this.setState({ graph: response.data.Data.graphData });
+            this.setState({ noNode: false });
+          } else {
+            this.setState({ noNode: true });
+          }
+        }
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+
+  }
 
   render() {
     return (
@@ -190,6 +208,9 @@ class Network extends Component {
             <div className="refresh_button_holder">
               <ButtonGroup minimal={true}>
                 <Button icon="refresh" onClick={this.getData}>
+                  refresh
+                </Button>
+                <Button icon="refresh" onClick={this.changeColor}>
                   refresh
                 </Button>
               </ButtonGroup>
@@ -227,4 +248,4 @@ class Network extends Component {
   }
 }
 
-export default Network;
+export default FlowManager;

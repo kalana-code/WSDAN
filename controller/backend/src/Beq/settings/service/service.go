@@ -91,3 +91,33 @@ func GetCurrentSetting(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(resp)
 
 }
+
+//GetControllerMac  used for get current Mac of Controller
+func GetControllerMac(w http.ResponseWriter, r *http.Request) {
+	if (*r).Method == "OPTIONS" {
+		return
+	}
+	log.Println("INFO: [ST]: Controller Current Mac is  requested.")
+	setting := db.GetSystemSetting()
+	resp := model.Response{}
+	// set Default value
+	resp.Default()
+
+	CurrentMac, err := setting.GetMAC()
+
+	if err != nil {
+		log.Println("ERROR: [ST]: Controller current mac requesting process is  failed.", err)
+		resp.InternalServerError()
+		w.WriteHeader(http.StatusInternalServerError)
+	} else {
+		data := make(map[string]interface{})
+		data["MAC"] = CurrentMac
+		resp.Code = http.StatusOK
+		resp.Data = data
+		resp.Message = "Controller current mac is  recived  successfully."
+		w.WriteHeader(http.StatusOK)
+		log.Println("INFO: [ST]: Controller current mac is  sent  successfully.")
+	}
+	json.NewEncoder(w).Encode(resp)
+
+}

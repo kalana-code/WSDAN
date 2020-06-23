@@ -12,6 +12,7 @@ import (
 type RuleDB map[string]model.RulesDataRow
 
 var instance RuleDB
+var flowData map[string]model.FlowData
 var ruleIndex int
 var flowID int
 
@@ -21,16 +22,23 @@ var once sync.Once
 func GetRuleStore() *RuleDB {
 	once.Do(func() {
 		instance = make(map[string]model.RulesDataRow)
+		flowData = make(map[string]model.FlowData)
 		ruleIndex = 0
 	})
 	return &instance
 }
 
 //AddRule add user to data base
-func (obj *RuleDB) AddRule(User model.RulesDataRow) (string, error) {
+func (obj *RuleDB) AddRule(rule model.RulesDataRow) (string, error) {
 	if instance != nil {
 		ruleID := obj.getRuleID()
-		instance[ruleID] = User
+		if flowData[rule.FlowID].DstIP == "" {
+			flowData[rule.FlowID] = model.FlowData{
+				DstIP: rule.DstIP,
+				SrcIP: rule.SrcIP,
+			}
+		}
+		instance[ruleID] = rule
 		ruleIndex++
 		return ruleID, nil
 	}
@@ -71,6 +79,17 @@ func (*RuleDB) FindRuleByDstIPAndProtocol(packetDetails packethandlerModel.Packe
 	return nil, errors.New("No Data Base Initiate")
 }
 
+//hasFlowID used to get rules by flow Id
+func hasFlowID(flowIDVal string) bool {
+	for _, RuleData := range instance {
+		if RuleData.FlowID == flowIDVal {
+			return true
+		}
+	}
+	return false
+
+}
+
 //FindRulesByFlowID used to get rules by flow Id
 func (*RuleDB) FindRulesByFlowID(flowIDVal string) (*[]model.Rule, error) {
 	rules := []model.Rule{}
@@ -93,12 +112,30 @@ func (*RuleDB) RemoveRuleByRuleID(RuleID string) (string, *string, error) {
 		_, ok := instance[RuleID]
 		if ok {
 			NodeIP := instance[RuleID].NodeIP
+			FlowID := instance[RuleID].FlowID
 			delete(instance, RuleID)
+			isFlowExist := hasFlowID(FlowID)
+			if !isFlowExist {
+				delete(flowData, FlowID)
+			}
 			return "Successfully Removed A Rule ", &NodeIP, nil
 		}
 		return "Not Exist Any Rule For Given RuleID ", nil, nil
 	}
 	return "No Data Base Initiate", nil, errors.New("No Data Base Initiate")
+}
+
+//ChangeRuleStateByRuleID used for remove Rule by RuleID
+func (*RuleDB) ChangeRuleStateByRuleID(RuleID string) (string, *string, bool, error) {
+	if instance != nil {
+		_, ok := instance[RuleID]
+		if ok {
+			rule := instance[RuleID]
+			return "Successfully Removed A Rule ", &rule.NodeIP, rule.ChangeState(), nil
+		}
+		return "Not Exist Any Rule For Given RuleID ", nil, false, nil
+	}
+	return "No Data Base Initiate", nil, false, errors.New("No Data Base Initiate")
 }
 
 //RemoveRulesByFlowID used for remove Rule by RuleID
@@ -107,6 +144,7 @@ func (*RuleDB) RemoveRulesByFlowID(FlowID string) (string, error) {
 		isRemoved := false
 		for RuleID, RuleData := range instance {
 			if RuleData.FlowID == FlowID {
+				delete(flowData, FlowID)
 				delete(instance, RuleID)
 				isRemoved = true
 			}
@@ -118,6 +156,8 @@ func (*RuleDB) RemoveRulesByFlowID(FlowID string) (string, error) {
 	}
 	return "", errors.New("No Data Base Initiate")
 }
+
+
 
 //GetAllRules used for remove Rule by RuleID
 func (*RuleDB) GetAllRules() (*[]model.Rule, error) {
@@ -131,6 +171,11 @@ func (*RuleDB) GetAllRules() (*[]model.Rule, error) {
 		return &rules, nil
 	}
 	return nil, errors.New("No Data Base Initiate")
+}
+
+//GetFlowData  used for geting flow data
+func (*RuleDB) GetFlowData() map[string]model.FlowData {
+	return flowData
 }
 
 //IsSet used for get Rule set State

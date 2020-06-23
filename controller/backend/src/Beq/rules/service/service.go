@@ -107,6 +107,28 @@ func GetAllRules(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// GetFlowData get flow data
+func GetFlowData(w http.ResponseWriter, r *http.Request) {
+	if (*r).Method == "OPTIONS" {
+		return
+	}
+	log.Println("INFO: [RU]: Flow data retriving By FlowID Process Initiate")
+	resp := model.Response{}
+	// set Default value
+	resp.Default()
+	rules := db.GetRuleStore()
+	data := make(map[string]interface{})
+	data["FlowData"] = rules.GetFlowData()
+	log.Println("INFO: [RU]: Success Flow data Retriving Process")
+	resp.Code = http.StatusOK
+	resp.Data = data
+	resp.Message = "Success Flow data Retriving Process"
+	w.WriteHeader(http.StatusOK)
+
+	json.NewEncoder(w).Encode(resp)
+
+}
+
 // RemoveRuleByRuleID remove rule ID
 func RemoveRuleByRuleID(w http.ResponseWriter, r *http.Request) {
 	if (*r).Method == "OPTIONS" {
@@ -132,6 +154,45 @@ func RemoveRuleByRuleID(w http.ResponseWriter, r *http.Request) {
 				Type:   JobModel.TypeRemoveRule,
 				TaskDetails: JobModel.RemoveRuleJob{
 					RuleID: RuleID,
+				},
+			}
+			dispurserDb.AddJob(jobModel)
+		}
+		resp.Code = http.StatusOK
+		resp.Message = Message
+		w.WriteHeader(http.StatusOK)
+
+	}
+	json.NewEncoder(w).Encode(resp)
+
+}
+
+// ChangeStateByRuleID remove rule ID
+func ChangeStateByRuleID(w http.ResponseWriter, r *http.Request) {
+	if (*r).Method == "OPTIONS" {
+		return
+	}
+	log.Println("INFO: [RU]: Change State of Rule By RuleID Process Initiate")
+	resp := model.Response{}
+	// set Default value
+	resp.Default()
+	rules := db.GetRuleStore()
+	RuleID := mux.Vars(r)["RuleID"]
+	Message, NodeIP, newState, err := rules.ChangeRuleStateByRuleID(RuleID)
+
+	if err != nil {
+		log.Println("ERROR: Payload Error", err)
+		resp.InternalServerError()
+		w.WriteHeader(http.StatusBadRequest)
+	} else {
+		log.Println("INFO: [RU]: " + Message)
+		if NodeIP != nil {
+			jobModel := JobModel.Job{
+				NodeIP: *NodeIP,
+				Type:   JobModel.TypeChangeRuleState,
+				TaskDetails: JobModel.RuleStateChangeJob{
+					RuleID:   RuleID,
+					IsActive: newState,
 				},
 			}
 			dispurserDb.AddJob(jobModel)

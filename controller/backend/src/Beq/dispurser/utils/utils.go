@@ -13,7 +13,7 @@ import (
 
 //Dispurse used for dispurse jobs to Node
 func Dispurse(job *model.Job) {
-	log.Println("INFO: [RD]: Dispursing .... ")
+	log.Println("INFO: [RD]: Dispursing JOB is being Initiated")
 	switch job.Type {
 	case model.TypeAddRule:
 		// add rule
@@ -24,7 +24,7 @@ func Dispurse(job *model.Job) {
 		removeRule(job)
 		break
 	case 3:
-		// add flow
+		stateChange(job)
 		break
 	case 4:
 		// remove flow
@@ -50,6 +50,24 @@ func removeRule(job *model.Job) {
 
 }
 
+func stateChange(job *model.Job) {
+	// figureout host IP
+	host := net.ParseIP(job.NodeIP)
+	if host == nil {
+		log.Println("ERROR: [RD]: [Remove Rule] IP convertion process was failed")
+		return
+	}
+
+	//figureout remove rule model
+	data, ok := job.TaskDetails.(model.RuleStateChangeJob)
+	if !ok {
+		log.Println("ERROR: [RD]: [Remove Rule] Task details not match to RemoveRuleJob model")
+		return
+	}
+	httpClient(host, model.StateChangeEndPoint, data)
+
+}
+
 func addRule(job *model.Job) {
 	// figureout host IP
 	host := net.ParseIP(job.NodeIP)
@@ -72,6 +90,7 @@ func httpClient(host net.IP, endPoint string, data interface{}) {
 	url := "http://" + host.String() + ":" + model.Port + "/" + endPoint
 	AddRule, isAddRule := data.(model.AddRuleJob)
 	RemoveJob, isRemoveJob := data.(model.RemoveRuleJob)
+	StateChangeJob, isStateChangeJob := data.(model.RuleStateChangeJob)
 	if isAddRule {
 		jsonData := map[string]interface{}{
 			"RuleID":    AddRule.RuleID,
@@ -108,6 +127,24 @@ func httpClient(host net.IP, endPoint string, data interface{}) {
 		resp, err := client.Do(req)
 		if err != nil {
 			log.Println("ERROR: [HC]: [HTTP Client]  Host : ", host.String(), " Job : RemoveRule, Request failed.")
+			return
+		}
+		defer resp.Body.Close()
+		log.Println("INFO: [HC]: [HTTP Client] Status Request. Host : ", host.String(), "Status : ", resp.Status)
+	} else if isStateChangeJob {
+		jsonData := map[string]interface{}{
+			"RuleID":   StateChangeJob.RuleID,
+			"IsActive": StateChangeJob.IsActive,
+		}
+		jsonValue, _ := json.Marshal(jsonData)
+		req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonValue))
+		req.Header.Set("X-Custom-Header", "myvalue")
+		req.Header.Set("Content-Type", "application/json")
+
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			log.Println("ERROR: [HC]: [HTTP Client]  Host : ", host.String(), " Job : State Change, Request failed.")
 			return
 		}
 		defer resp.Body.Close()

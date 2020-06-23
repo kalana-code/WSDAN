@@ -10,8 +10,8 @@ const (
 	//TypeRemoveRule job type used for create job for remove a rule in node
 	TypeRemoveRule = 2
 
-	//TypeNodeState used for request  node state task
-	TypeNodeState = 3
+	//TypeChangeRuleState used for chnage rule state
+	TypeChangeRuleState = 3
 )
 
 const (
@@ -21,6 +21,9 @@ const (
 	RemoveRuleEndPoint = "RemoveFlowRule"
 	//AddRuleEndPoint used to define add rule endpoint
 	AddRuleEndPoint = "AddFlowRule"
+
+	//StateChangeEndPoint used to define add rule endpoint
+	StateChangeEndPoint = "SetIsActive"
 )
 
 //Job is used for add Tesk for task queue
@@ -33,6 +36,12 @@ type Job struct {
 //RemoveRuleJob used for remove rule from node
 type RemoveRuleJob struct {
 	RuleID string
+}
+
+//RuleStateChangeJob used for  change state of rule
+type RuleStateChangeJob struct {
+	RuleID   string
+	IsActive bool
 }
 
 //AddRuleJob used for add rule to node

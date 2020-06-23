@@ -2,6 +2,12 @@ package model
 
 import "net/http"
 
+//FlowLink used for build Flow Link
+type FlowLink struct {
+	SrcNode int
+	DstNode int
+}
+
 // GrpNode used for geanarate Node information for network graph
 type GrpNode struct {
 	ID       int      `json:"id"`
@@ -39,6 +45,29 @@ func (obj *GrpNodeLink) SetLink(From int, To int, Label string, controllerLink b
 	obj.Arrows = Arrow{}
 	obj.Color = ColourStyle{
 		Color: "gray",
+	}
+	obj.Arrows.To = ArrowStyle{Enabled: false}
+	obj.Arrows.From = ArrowStyle{Enabled: false}
+	obj.Arrows.Middle = ArrowStyle{Enabled: false}
+
+}
+
+//SetLinkWithColor used for set color to edge
+func (obj *GrpNodeLink) SetLinkWithColor(From int, To int, Label string, controllerLink bool, color string, isDashed bool) {
+	obj.From = From
+	obj.To = To
+	obj.Length = 200
+	if !controllerLink {
+		obj.Label = Label
+		// obj.Length = 400
+	}
+	obj.ArrowStrikethrough = false
+	obj.Physics = true
+	obj.Dashes = isDashed
+	// set Arrow head
+	obj.Arrows = Arrow{}
+	obj.Color = ColourStyle{
+		Color: color,
 	}
 	obj.Arrows.To = ArrowStyle{Enabled: false}
 	obj.Arrows.From = ArrowStyle{Enabled: false}
