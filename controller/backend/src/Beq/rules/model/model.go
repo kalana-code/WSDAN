@@ -70,8 +70,9 @@ type StateRequest struct {
 
 //FlowData used for track flow rule src and destination IP
 type FlowData struct {
-	DstIP string
-	SrcIP string
+	DstIP    string
+	SrcIP    string
+	Protocol string
 }
 
 // Response Used for exchange State
@@ -103,4 +104,3 @@ func (obj *Response) InternalServerError() {
 	obj.Status = "Failed"
 	obj.Message = "Internal Server Error"
 }
-

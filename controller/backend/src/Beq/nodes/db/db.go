@@ -245,7 +245,6 @@ func isConnected(node1Id int, node2Id int) bool {
 
 func makeFlow(node1Id int, node2Id int) {
 	if node1Id != node2Id {
-		fmt.Println("<<<--------------")
 		maxID := 0
 		minID := 0
 		if node1Id > node2Id {

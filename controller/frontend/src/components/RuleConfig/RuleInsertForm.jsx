@@ -53,6 +53,7 @@ class RuleInsertForm extends Component {
         if(this.state.FlowData[value]!=undefined){
           this.setState({
             SrcIP:this.state.FlowData[value].SrcIP,
+            Protocol:this.state.FlowData[value].Protocol,
             DstIP:this.state.FlowData[value].DstIP,
             disableIPfield:true
           })
@@ -66,9 +67,9 @@ class RuleInsertForm extends Component {
     }
     this.setState({ [name]: value });
   };
-isEmpty=(str)=> {
-    return (!str || 0 === str.length);
-}
+  isEmpty=(str)=> {
+      return (!str || 0 === str.length);
+  }
 
   VerifyAndSubmit = () => {
     let Error = {
@@ -168,7 +169,7 @@ isEmpty=(str)=> {
           .NodeData.Node.Name,
         FlowID: this.state.FlowID,
         Protocol: this.state.Protocol,
-        ScrIP: this.state.ScrIP,
+        SrcIP: this.state.SrcIP,
         DstIP: this.state.DstIP,
         Interface: this.state.Interface,
         DstMAC: this.state.DstMAC,
@@ -188,6 +189,7 @@ isEmpty=(str)=> {
         }
       );
       this.props.toggleDrawer();
+
       this.setState({
         destinationMac: [],
         isLoading: false,
@@ -308,6 +310,7 @@ isEmpty=(str)=> {
                   <div className="bp3-select">
                     <select
                       name="Protocol"
+                      disabled={this.state.disableIPfield}
                       onChange={this.handleChange}
                       value={this.state.Protocol}
                       intent={this.getIntent("Protocol")}
@@ -350,7 +353,7 @@ isEmpty=(str)=> {
                     value={this.state.SrcIP}
                     id="text-input"
                     placeholder="192.168.3.2"
-                    intent={this.getIntent("ScrIP")}
+                    intent={this.getIntent("SrcIP")}
                   />
                 </FormGroup>
                 <FormGroup

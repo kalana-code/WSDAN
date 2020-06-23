@@ -79,6 +79,10 @@ class Network extends Component {
         size: 12,
       },
     },
+    layout:{
+
+    improvedLayout:true
+  },
     groups: {
       AP: {
         shape: "icon",
