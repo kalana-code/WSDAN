@@ -34,6 +34,7 @@ func PacketAnalyzer(packet gopacket.Packet) (gopacket.SerializeBuffer, *ruleMode
 	if ipLayer != nil {
 		log.Println(infoLog, "IPv4 layer detected.")
 		ipl, _ = ipLayer.(*layers.IPv4)
+		packetDetails.SrcIP = ipl.SrcIP.String()
 		packetDetails.DstIP = ipl.DstIP.String()
 		packetDetails.Protocol = ipl.Protocol.String()
 		log.Println(infoLog, "DstIP : ", packetDetails.DstIP, " SrcIP : ", ipl.SrcIP.String())
@@ -112,7 +113,7 @@ func PacketAnalyzer(packet gopacket.Packet) (gopacket.SerializeBuffer, *ruleMode
 func generateEthernetLayer(packetDetails model.PacketDetails) (*layers.Ethernet, *ruleModel.RulesDataRow) {
 	log.Println(infoLog, "Generating Ethernet Layer")
 	rulesDb := ruleDB.GetRuleStore()
-	ruleConfiguration, err := rulesDb.FindRuleByDstIPAndProtocol(packetDetails)
+	ruleConfiguration, err := rulesDb.FindRuleByDstIPAndSrcIPAndProtocol(packetDetails)
 	if err != nil {
 		log.Println(errorLog, "DB data retrieving error", err)
 		return nil, nil
