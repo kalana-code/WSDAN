@@ -22,7 +22,7 @@ var (
 	controllerIP             string = "192.168.0.4"
 	port                     string = "8081"
 	endPoint                 string = "AddNodeInfo"
-	endPointGetControllerMAC string = "GetControllerMAC"
+	endPointGetControllerMAC string = "GetControllerMac"
 	infoLog                  string = "INFO: [CL]:"
 	errorLog                 string = "ERROR: [CL]:"
 	data                     ControllerMAC
