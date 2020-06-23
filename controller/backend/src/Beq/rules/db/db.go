@@ -66,11 +66,12 @@ func (*RuleDB) FindRuleByRuleID(RuleID string) (*model.RulesDataRow, error) {
 	return nil, errors.New("No Data Base Initiate")
 }
 
-//FindRuleByDstIPAndProtocol used for get Rule bu DstIP and Protocol
-func (*RuleDB) FindRuleByDstIPAndProtocol(packetDetails packethandlerModel.PacketDetails) (*model.RulesDataRow, error) {
+//FindRuleByDstIPAndSrcIPAndProtocol used for get Rule bu DstIP and Protocol
+func (*RuleDB) FindRuleByDstIPAndSrcIPAndProtocol(packetDetails packethandlerModel.PacketDetails) (*model.RulesDataRow, error) {
 	if instance != nil {
 		for _, rule := range instance {
-			if rule.DstIP == packetDetails.DstIP && rule.Protocol == packetDetails.Protocol {
+			if rule.DstIP == packetDetails.DstIP && rule.SrcIP == packetDetails.SrcIP &&
+				rule.Protocol == packetDetails.Protocol && rule.IsActive {
 				return &rule, nil
 			}
 		}
@@ -156,8 +157,6 @@ func (*RuleDB) RemoveRulesByFlowID(FlowID string) (string, error) {
 	}
 	return "", errors.New("No Data Base Initiate")
 }
-
-
 
 //GetAllRules used for remove Rule by RuleID
 func (*RuleDB) GetAllRules() (*[]model.Rule, error) {
