@@ -120,9 +120,14 @@ func (*db) GenarateNetworkTopologyWithFlowHighlight() (map[string]string, model.
 	if instance == nil {
 		return nil, GrpData, errors.New("No Node Data")
 	}
-	_, err := getNodeLinksByFlowID("F0")
+	//get Flow links and put in flow links array
+	flowLinks, err := getNodeLinksByFlowID("F0")
 	if err != nil {
 		return nil, GrpData, errors.New("Error in Flow generation process")
+	}
+	for _, s := range flowLinks {
+
+		makeFlow(s.DstNode, s.SrcNode)
 	}
 
 	nodes := []model.GrpNode{}
@@ -160,7 +165,8 @@ func (*db) GenarateNetworkTopologyWithFlowHighlight() (map[string]string, model.
 
 			if isConnected(allNodes[MAC], allNodes[Neighbour.MAC]) == false {
 				makeConectivity(allNodes[MAC], allNodes[Neighbour.MAC])
-
+				edgeColor, isDashed := isFlowEdge(allNodes[MAC], allNodes[Neighbour.MAC])
+				fmt.Println(edgeColor, isDashed)
 				currentLink := model.GrpNodeLink{}
 				isCotrollerLink := false
 				if MAC == controllerMAC || Neighbour.MAC == controllerMAC {
@@ -171,8 +177,8 @@ func (*db) GenarateNetworkTopologyWithFlowHighlight() (map[string]string, model.
 					allNodes[Neighbour.MAC],
 					Neighbour.Bandwidth,
 					isCotrollerLink,
-					"green",
-					true,
+					edgeColor,
+					isDashed,
 				)
 				nodeLinks = append(nodeLinks, currentLink)
 			}
@@ -239,6 +245,7 @@ func isConnected(node1Id int, node2Id int) bool {
 
 func makeFlow(node1Id int, node2Id int) {
 	if node1Id != node2Id {
+		fmt.Println("<<<--------------")
 		maxID := 0
 		minID := 0
 		if node1Id > node2Id {
@@ -248,12 +255,16 @@ func makeFlow(node1Id int, node2Id int) {
 			maxID = node1Id
 			minID = node2Id
 		}
-		KEY := strconv.Itoa(maxID) + "edge" + strconv.Itoa(minID)
+		KEY := strconv.Itoa(maxID) + "flowEdge" + strconv.Itoa(minID)
+		fmt.Println("--------------")
 		flowChecker[KEY] = true
+		fmt.Println(flowChecker)
+		fmt.Println("--------------")
 	}
 }
 
-func isConnectedFlow(node1Id int, node2Id int) (string, bool) {
+//check whather this edge is belongs to flow
+func isFlowEdge(node1Id int, node2Id int) (string, bool) {
 	if node1Id != node2Id {
 		maxID := 0
 		minID := 0
@@ -264,12 +275,13 @@ func isConnectedFlow(node1Id int, node2Id int) (string, bool) {
 			minID = node1Id
 			maxID = node2Id
 		}
-		KEY := strconv.Itoa(maxID) + "edge" + strconv.Itoa(minID)
-		if flowChecker[KEY] {
-			return "green", true
+		KEY := strconv.Itoa(maxID) + "flowEdge" + strconv.Itoa(minID)
+		fmt.Println(KEY, flowChecker[KEY])
+		if flowChecker[KEY] == true {
+			return "green", false
 		}
-		return "gray", false
+		return "gray", true
 
 	}
-	return "green", true
+	return "gray", true
 }
