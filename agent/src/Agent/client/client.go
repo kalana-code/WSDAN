@@ -23,7 +23,7 @@ type responseGetControllerMAC struct {
 	Program string        `json:"Program"`
 	Version string        `json:"Version"`
 	Status  string        `json:"Status"`
-	Code    string        `json:"Code"`
+	Code    int           `json:"Code"`
 	Message string        `json:"Message"`
 	Data    controllerMAC `json:"Data"`
 }
@@ -48,17 +48,17 @@ func GetControllerMAC() (string, error) {
 		return "", err
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	err = json.NewDecoder(resp.Body).Decode(&data)
 	if err != nil {
 		log.Println(errorLog, "GetControllerMAC: Error in reading response", err)
 		return "", err
 	}
-	log.Println(infoLog, "GetControllerMAC: Response Data:", string(body))
-	jsonErr := json.Unmarshal(body, &data)
+	jsonData, jsonErr := json.Marshal(data)
 	if jsonErr != nil {
 		log.Println(errorLog, "GetControllerMAC: JSON Error:", jsonErr)
 		return "", jsonErr
 	}
+	log.Print(infoLog, "Recieved, Controller MAC Successfully:", string(jsonData))
 	return data.Data.MAC, nil
 }
 
