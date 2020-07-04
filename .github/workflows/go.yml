@@ -23,7 +23,7 @@ jobs:
       uses: actions/checkout@v2
     
     - name: Build
-      run: go build -v /controller/backend/src/Beq
+      run: go build -v controller/backend/src/Beq
 
     - name: Test
       run: go test -v .
