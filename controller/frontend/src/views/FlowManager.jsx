@@ -112,18 +112,16 @@ class FlowManager extends Component {
     layout: {
       randomSeed: 55,
     },
-    physics: {
-      forceAtlas2Based: {
-        gravitationalConstant: -26,
-        centralGravity: 0.005,
-        springLength: 230,
-        springConstant: 0.18,
-      },
-      maxVelocity: 146,
-      solver: "forceAtlas2Based",
-      timestep: 0.35,
-      stabilization: { iterations: 150 },
+    forceAtlas2Based: {
+      gravitationalConstant: -26,
+      centralGravity: 0.005,
+      springLength: 230,
+      springConstant: 0.18,
     },
+    maxVelocity: 146,
+    solver: "forceAtlas2Based",
+    timestep: 0.35,
+    stabilization: { iterations: 150 },
   };
 
   getData = () => {
@@ -180,25 +178,25 @@ class FlowManager extends Component {
     }
   };
 
-  changeColor=()=>{
-   
-    axios.get(`http://` + config.host + `:8081/GetNodeInfoWithFlowHighlight`).then(
-      (response) => {
-        if (response.status === 200) {
-          if (response.data.Data.graphData.nodes.length > 0) {
-            this.setState({ graph: response.data.Data.graphData });
-            this.setState({ noNode: false });
-          } else {
-            this.setState({ noNode: true });
+  changeColor = () => {
+    axios
+      .get(`http://` + config.host + `:8081/GetNodeInfoWithFlowHighlight`)
+      .then(
+        (response) => {
+          if (response.status === 200) {
+            if (response.data.Data.graphData.nodes.length > 0) {
+              this.setState({ graph: response.data.Data.graphData });
+              this.setState({ noNode: false });
+            } else {
+              this.setState({ noNode: true });
+            }
           }
+        },
+        (error) => {
+          console.log(error);
         }
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
-
-  }
+      );
+  };
 
   render() {
     return (

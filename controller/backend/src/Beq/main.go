@@ -9,9 +9,9 @@ import (
 	"net"
 	"strings"
 
-	packethandler "Beq/packethandler/controller"
+	// packethandler "Beq/packethandler/controller"
 
-	packethandlerUtil "Beq/packethandler/utils"
+	// packethandlerUtil "Beq/packethandler/utils"
 	routes "Beq/routes"
 	"fmt"
 	"log"
@@ -58,7 +58,7 @@ func server() {
 
 func packetHandler() {
 	log.Println("INFO: [PH]: Packet Handler is Activeted")
-	packethandler.PacketController()
+	// packethandler.PacketController()
 }
 
 func requestDispurser(task *jobQueue.JobQueue) {
@@ -75,20 +75,20 @@ func main() {
 	queue := jobQueue.GetRequestQueue()
 	setting := setting.GetSystemSetting()
 
-	err := packethandlerUtil.IptableInitializer()
-	if err != nil {
-		log.Println("ERROR: [PH]: Error when initializing iptables")
-		exit()
-	}
+	// err := packethandlerUtil.IptableInitializer()
+	// if err != nil {
+	// 	log.Println("ERROR: [PH]: Error when initializing iptables")
+	// 	exit()
+	// }
 
-	InterfaceName := "wlan0"
-	//get Mac address and IP address
-	IP, MAC, err := GetIPAndMAC(InterfaceName)
-	if err != nil {
-		exit()
-	}
+	// InterfaceName := "wlan0"
+	// //get Mac address and IP address
+	// IP, MAC, err := GetIPAndMAC(InterfaceName)
+	// if err != nil {
+	// 	exit()
+	// }
 	//add mac and ip to setting db
-	setting.SetMACandIP(MAC, IP)
+	setting.SetMACandIP("93:FB:E5:3D:0E:C1", "93:FB:E5:3D:0E:C1")
 
 	go server()
 	go packetHandler()

@@ -61,17 +61,17 @@ func (obj *GrpNodeLink) SetLinkWithColor(From int, To int, Label string, control
 		obj.Label = Label
 		// obj.Length = 400
 	}
-	obj.ArrowStrikethrough = false
-	obj.Physics = true
-	obj.Dashes = isDashed
+	// obj.ArrowStrikethrough = false
+	// obj.Physics = true
+	// obj.Dashes = isDashed
 	// set Arrow head
 	obj.Arrows = Arrow{}
 	obj.Color = ColourStyle{
 		Color: color,
 	}
-	obj.Arrows.To = ArrowStyle{Enabled: false}
-	obj.Arrows.From = ArrowStyle{Enabled: false}
-	obj.Arrows.Middle = ArrowStyle{Enabled: false}
+	// obj.Arrows.To = ArrowStyle{Enabled: false}
+	// obj.Arrows.From = ArrowStyle{Enabled: false}
+	// obj.Arrows.Middle = ArrowStyle{Enabled: false}
 
 }
 
