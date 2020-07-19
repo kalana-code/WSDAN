@@ -4,6 +4,9 @@
 .LSOverride
 .vscode
 
+agent/pkg/
+controller/backend/pkg
+
 # Icon must end with two \r
 Icon
 
