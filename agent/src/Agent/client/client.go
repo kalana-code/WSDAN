@@ -13,9 +13,19 @@ import (
 	"strconv"
 )
 
-// ControllerMAC is used to store controller MAC
-type ControllerMAC struct {
+// controllerMAC is used to store controller MAC
+type controllerMAC struct {
 	MAC string `json:"MAC"`
+}
+
+// responseGetControllerMAC is used to store controller MAC response
+type responseGetControllerMAC struct {
+	Program string        `json:"Program"`
+	Version string        `json:"Version"`
+	Status  string        `json:"Status"`
+	Code    int           `json:"Code"`
+	Message string        `json:"Message"`
+	Data    controllerMAC `json:"Data"`
 }
 
 var (
@@ -25,7 +35,7 @@ var (
 	endPointGetControllerMAC string = "GetControllerMac"
 	infoLog                  string = "INFO: [CL]:"
 	errorLog                 string = "ERROR: [CL]:"
-	data                     ControllerMAC
+	data                     responseGetControllerMAC
 )
 
 // GetControllerMAC is used to get Controller MAC address
@@ -38,18 +48,18 @@ func GetControllerMAC() (string, error) {
 		return "", err
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	err = json.NewDecoder(resp.Body).Decode(&data)
 	if err != nil {
 		log.Println(errorLog, "GetControllerMAC: Error in reading response", err)
 		return "", err
 	}
-	log.Println(infoLog, "GetControllerMAC: Response Data:", string(body))
-	jsonErr := json.Unmarshal(body, &data)
+	jsonData, jsonErr := json.Marshal(data)
 	if jsonErr != nil {
 		log.Println(errorLog, "GetControllerMAC: JSON Error:", jsonErr)
 		return "", jsonErr
 	}
-	return data.MAC, nil
+	log.Print(infoLog, "Recieved, Controller MAC Successfully:", string(jsonData))
+	return data.Data.MAC, nil
 }
 
 // SendNodeData is used to send node data to the controller

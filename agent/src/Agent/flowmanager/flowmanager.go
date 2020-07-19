@@ -58,6 +58,7 @@ func RuleChecker(packetDetails PacketDetails) database.RuleConfiguration {
 	log.Println(infoLog, "Default rule is set(Sending to the controller)")
 	settings := config.GetSettings()
 	controllerMAC, err = settings.GetControllerMAC()
+	log.Println(infoLog, "Controller MAC", controllerMAC)
 	defaultRule := database.RuleConfiguration{
 		DstIP:     "any",
 		SrcIP:     "any",
