@@ -1,4 +1,0 @@
-{
-    "typescript.format.insertSpaceAfterTypeAssertion": true,
-    "prettier.insertPragma": true
-}
