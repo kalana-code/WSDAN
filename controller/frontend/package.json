@@ -17,7 +17,7 @@
     "deep-equal": "^2.0.3",
     "js-cookie": "^2.2.1",
     "jwt-decode": "^2.2.0",
-    "node-sass": "^4.12.0",
+    "node-sass": "^7.0.0",
     "react": "^16.8.6",
     "react-bootstrap": "0.32.4",
     "react-chartist": "0.13.3",
